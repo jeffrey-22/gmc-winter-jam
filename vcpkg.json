@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    {
+      "name": "libtcod",
+      "default-features": true,
+      "features": [
+        "png",
+        "sdl",
+        "unicode",
+        "zlib"
+      ]
+    },
+    "sdl3"
+  ]
+}
