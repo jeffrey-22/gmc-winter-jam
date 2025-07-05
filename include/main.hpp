@@ -1,0 +1,23 @@
+#pragma once
+
+#include "libtcod.hpp"
+class Actor;
+class Ai;
+class Attacker;
+class Destructible;
+class Pickable;
+class Container;
+class Map;
+class Gui;
+class Menu;
+#include "actor/actor.hpp"
+#include "actor/ai.hpp"
+#include "actor/attacker.hpp"
+#include "actor/container.hpp"
+#include "actor/destructible.hpp"
+#include "actor/pickable.hpp"
+#include "engine.hpp"
+#include "gui/gui.hpp"
+#include "gui/menu.hpp"
+#include "map.hpp"
+#include "random.hpp"
