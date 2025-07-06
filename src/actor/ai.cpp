@@ -176,7 +176,22 @@ void MonsterAi::moveOrAttack(Actor* owner, int targetx, int targety) {
 	}
 }
 
-ConfusedMonsterAi::ConfusedMonsterAi(int nbTurns, Ai* oldAi) : nbTurns(nbTurns), oldAi(oldAi) {}
+TemporaryAi::TemporaryAi(int nbTurns) : nbTurns(nbTurns) {}
+
+void TemporaryAi::update(Actor* owner) {
+	nbTurns--;
+	if (nbTurns == 0) {
+		owner->ai = oldAi;
+		delete this;
+	}
+}
+
+void TemporaryAi::applyTo(Actor* actor) {
+	oldAi = actor->ai;
+	actor->ai = this;
+}
+
+ConfusedMonsterAi::ConfusedMonsterAi(int nbTurns) : TemporaryAi(nbTurns) {}
 
 void ConfusedMonsterAi::update(Actor* owner) {
 	Random rng = Random::instance();
@@ -195,9 +210,5 @@ void ConfusedMonsterAi::update(Actor* owner) {
 			}
 		}
 	}
-	nbTurns--;
-	if (nbTurns == 0) {
-		owner->ai = oldAi;
-		delete this;
-	}
+	TemporaryAi::update(owner);
 }

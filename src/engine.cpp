@@ -30,11 +30,11 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 	params.window_title = "The Underworlder";
 
 	// Load tileset
-	auto tileset = tcod::load_tilesheet(getDataDir() / "dejavu16x16_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+	auto tileset = tcod::load_tilesheet(getDataDir() / "Zesty_curses_24x24.png", {16, 16}, tcod::CHARMAP_CP437);
 	params.tileset = tileset.get();
 
 	// Load console
-	console = tcod::Console{80, 40};
+	console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
 	params.console = console.get();
 
 	// Load context
@@ -49,7 +49,7 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 	actors.push_back(player);
 
 	// Create map (after actors)
-	map = new Map(80, 33);
+	map = new Map(MAP_WIDTH, MAP_HEIGHT);
 
 	// Create Gui
 	gui = new Gui();

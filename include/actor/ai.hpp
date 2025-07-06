@@ -30,12 +30,19 @@ class MonsterAi : public Ai {
 	void moveOrAttack(Actor* owner, int targetx, int targety);
 };
 
-class ConfusedMonsterAi : public Ai {
+class TemporaryAi : public Ai {
    public:
-	ConfusedMonsterAi(int nbTurns, Ai* oldAi);
+	TemporaryAi(int nbTurns);
 	void update(Actor* owner);
+	void applyTo(Actor* actor);
 
    protected:
 	int nbTurns;
 	Ai* oldAi;
+};
+
+class ConfusedMonsterAi : public TemporaryAi {
+   public:
+	ConfusedMonsterAi(int nbTurns);
+	void update(Actor* owner);
 };

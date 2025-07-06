@@ -104,11 +104,12 @@ void InventoryMenu::render(tcod::Console& mainConsole) {
 	tcod::blit(
 		mainConsole,
 		inventoryConsole,
-		{80 / 2 - INVENTORY_WIDTH / 2, 40 / 2 - INVENTORY_HEIGHT / 2},
+		{engine.CONSOLE_WIDTH / 2 - INVENTORY_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INVENTORY_HEIGHT / 2},
 		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT});
 }
 
-TilePickMenu::TilePickMenu(Pickable* invoker, Actor* owner, Actor* wearer, bool allowCancel, TilePickRange pickRange)
+TilePickMenu::TilePickMenu(
+	TargetSelector* invoker, Actor* owner, Actor* wearer, bool allowCancel, TilePickRange pickRange)
 	: invoker(invoker), owner(owner), wearer(wearer), allowCancel(allowCancel), pickRange(pickRange) {}
 
 void TilePickMenu::handleCancel() {
@@ -187,7 +188,7 @@ void TilePickMenu::render(tcod::Console& mainConsole) {
 	}
 }
 
-ItemPickMenu::ItemPickMenu(Pickable* invoker, Actor* owner, Actor* wearer, bool allowCancel)
+ItemPickMenu::ItemPickMenu(TargetSelector* invoker, Actor* owner, Actor* wearer, bool allowCancel)
 	: invoker(invoker),
 	  owner(owner),
 	  wearer(wearer),
@@ -300,7 +301,7 @@ void ItemPickMenu::render(tcod::Console& mainConsole) {
 	tcod::blit(
 		mainConsole,
 		itemPickConsole,
-		{80 / 2 - INVENTORY_WIDTH / 2, 40 / 2 - INVENTORY_HEIGHT / 2},
+		{engine.CONSOLE_WIDTH / 2 - INVENTORY_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INVENTORY_HEIGHT / 2},
 		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT});
 }
 
@@ -378,6 +379,6 @@ void ItemDropMenu::render(tcod::Console& mainConsole) {
 	tcod::blit(
 		mainConsole,
 		itemDropConsole,
-		{80 / 2 - INVENTORY_WIDTH / 2, 40 / 2 - INVENTORY_HEIGHT / 2},
+		{engine.CONSOLE_WIDTH / 2 - INVENTORY_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INVENTORY_HEIGHT / 2},
 		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT});
 }

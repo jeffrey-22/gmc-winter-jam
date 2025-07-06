@@ -42,7 +42,7 @@ class BspListener : public ITCODBspCallback {
 	}
 };
 
-// Create map with (width, height), so x < width and y < height. Actors are already created
+// Create map with (width, height), so x < width and y < height. Players are already created
 Map::Map(int width, int height) : width(width), height(height) {
 	tiles = new Tile[width * height];
 	map = new TCODMap(width, height);
@@ -189,7 +189,9 @@ void Map::addItem(int x, int y) {
 	if (dice < 10) {
 		Actor* healthPotion = new Actor(x, y, '!', "health potion", VIOLET);
 		healthPotion->blocks = false;
-		healthPotion->pickable = new Healer(4);
+		healthPotion->pickable = new Pickable(
+			new TargetSelector(TargetSelector::WEARER_HIMSELF, 0),
+			new HealthEffect(4, "%s used the health potion and recovered %g HP!"));
 		engine.actors.push_back(healthPotion);
 		// Items visuals should be at the back to not hide actors standing over them
 		engine.sendToBack(healthPotion);
@@ -197,21 +199,31 @@ void Map::addItem(int x, int y) {
 		// create a scroll of lightning bolt
 		Actor* scrollOfLightningBolt = new Actor(x, y, '?', "scroll of lightning bolt", LIGHT_YELLOW);
 		scrollOfLightningBolt->blocks = false;
-		scrollOfLightningBolt->pickable = new LightningBolt(5, 20);
+		scrollOfLightningBolt->pickable = new Pickable(
+			new TargetSelector(TargetSelector::CLOSEST_MONSTER, 5),
+			new HealthEffect(
+				-20,
+				"A lighting bolt strikes the %s with a loud thunder!\n"
+				"The damage is %g hit points."));
 		engine.actors.push_back(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
 	} else if (dice < 20 + 10 + 10) {
 		// create a scroll of fireball
 		Actor* scrollOfFireball = new Actor(x, y, '?', "scroll of fireball", LIGHT_YELLOW);
 		scrollOfFireball->blocks = false;
-		scrollOfFireball->pickable = new Fireball(3, 12);
+		scrollOfFireball->pickable = new Pickable(
+			new TargetSelector(TargetSelector::SELECTED_RANGE, 3),
+			new HealthEffect(-12, "The %s gets burned for %g hit points."));
 		engine.actors.push_back(scrollOfFireball);
 		engine.sendToBack(scrollOfFireball);
 	} else {
 		// create a scroll of confusion
 		Actor* scrollOfConfusion = new Actor(x, y, '#', "scroll of confusion", LIGHT_YELLOW);
 		scrollOfConfusion->blocks = false;
-		scrollOfConfusion->pickable = new Confuser(10, 8);
+		scrollOfConfusion->pickable = new Pickable(
+			new TargetSelector(TargetSelector::SELECTED_MONSTER, 5),
+			new AiChangeEffect(
+				new ConfusedMonsterAi(10), "The eyes of the %s look vacant,\nas he starts to stumble around!"));
 		engine.actors.push_back(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
 	}

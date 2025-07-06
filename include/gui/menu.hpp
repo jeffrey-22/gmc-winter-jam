@@ -38,7 +38,7 @@ class TilePickMenu : public Menu {
    public:
 	enum TilePickRange { IN_LINE_OF_SIGHT };
 	TilePickMenu(
-		Pickable* invoker,
+		TargetSelector* invoker,
 		Actor* owner,
 		Actor* wearer,
 		bool allowCancel = true,
@@ -51,7 +51,7 @@ class TilePickMenu : public Menu {
    protected:
 	void handleCancel();
 
-	Pickable* invoker;
+	TargetSelector* invoker;
 	Actor* owner;
 	Actor* wearer;
 	bool allowCancel;
@@ -62,7 +62,7 @@ class TilePickMenu : public Menu {
 
 class ItemPickMenu : public Menu {
    public:
-	ItemPickMenu(Pickable* invoker, Actor* owner, Actor* wearer, bool allowCancel = true);
+	ItemPickMenu(TargetSelector* invoker, Actor* owner, Actor* wearer, bool allowCancel = true);
 	~ItemPickMenu() = default;
 
 	virtual void update() override;
@@ -72,7 +72,7 @@ class ItemPickMenu : public Menu {
 	void handleCancel();
 
 	tcod::Console itemPickConsole;
-	Pickable* invoker;
+	TargetSelector* invoker;
 	Actor* owner;
 	Actor* wearer;
 	bool allowCancel;

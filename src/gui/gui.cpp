@@ -3,7 +3,7 @@
 
 #include "main.hpp"
 
-static const int PANEL_HEIGHT = 7;
+static const int PANEL_HEIGHT = 8;
 static const int BAR_WIDTH = 20;
 
 static const int MSG_X = BAR_WIDTH + 2;
@@ -15,7 +15,7 @@ static constexpr auto LIGHT_RED = tcod::ColorRGB{255, 63, 63};
 static constexpr auto DARKER_RED = tcod::ColorRGB{127, 0, 0};
 static constexpr auto LIGHT_GREY = tcod::ColorRGB{159, 159, 159};
 
-Gui::Gui() : guiConsole(tcod::Console{80, PANEL_HEIGHT}), isMenuOpen(false), menu(NULL) { log.clear(); }
+Gui::Gui() : guiConsole(tcod::Console{engine.MAP_WIDTH, PANEL_HEIGHT}), isMenuOpen(false), menu(NULL) { log.clear(); }
 
 Gui::~Gui() {
 	for (auto message : log) delete message;
@@ -79,7 +79,7 @@ void Gui::render(tcod::Console& mainConsole) {
 	// Draw actor names selected by mouse, if in FoV
 	renderMouseLook();
 	// Blit GUI console to the main console
-	tcod::blit(mainConsole, guiConsole, {0, 40 - PANEL_HEIGHT}, {0, 0, 80, PANEL_HEIGHT}, 0.7f, 0.7f);
+	tcod::blit(mainConsole, guiConsole, {0, engine.MAP_HEIGHT}, {0, 0, engine.MAP_WIDTH, PANEL_HEIGHT}, 0.7f, 0.7f);
 
 	// Blit menu console if it is ready
 	if (isMenuOpen) {

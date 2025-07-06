@@ -20,6 +20,12 @@ class Engine {
 
 	Engine() = default;
 
+	static constexpr int MAP_WIDTH = 72;
+	static constexpr int MAP_HEIGHT = 32;
+	static constexpr int GUI_PANEL_HEIGHT = 8;
+	static constexpr int CONSOLE_WIDTH = MAP_WIDTH;
+	static constexpr int CONSOLE_HEIGHT = MAP_HEIGHT + GUI_PANEL_HEIGHT;
+
 	Uint32 lastEventType;
 	SDL_KeyboardEvent lastKeyboardEvent;
 	Uint8 lastMouseButton;

@@ -10,12 +10,16 @@ class Container;
 class Map;
 class Gui;
 class Menu;
+class Effect;
+class TargetSelector;
 #include "actor/actor.hpp"
 #include "actor/ai.hpp"
 #include "actor/attacker.hpp"
 #include "actor/container.hpp"
 #include "actor/destructible.hpp"
+#include "actor/effect.hpp"
 #include "actor/pickable.hpp"
+#include "actor/targetselector.hpp"
 #include "engine.hpp"
 #include "gui/gui.hpp"
 #include "gui/menu.hpp"
