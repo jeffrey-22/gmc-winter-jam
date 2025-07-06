@@ -32,6 +32,12 @@ class InventoryMenu : public Menu {
    protected:
 	tcod::Console inventoryConsole;
 	Actor* inventoryOwner;
+
+	friend class ItemDropMenu;
+	friend class ItemPickMenu;
+
+	static constexpr int INVENTORY_WIDTH = 50;
+	static constexpr int INVENTORY_HEIGHT = 28;
 };
 
 class TilePickMenu : public Menu {
@@ -90,4 +96,34 @@ class ItemDropMenu : public Menu {
    protected:
 	tcod::Console itemDropConsole;
 	Actor* inventoryOwner;
+};
+
+class IntroductionMenu : public Menu {
+   public:
+	IntroductionMenu();
+	~IntroductionMenu() = default;
+
+	virtual void update() override;
+	virtual void render(tcod::Console& mainConsole) override;
+
+   protected:
+	tcod::Console introductionConsole;
+
+	static constexpr int INTRO_WIDTH = 60;
+	static constexpr int INTRO_HEIGHT = 30;
+};
+
+class ControlsMenu : public Menu {
+   public:
+	ControlsMenu();
+	~ControlsMenu() = default;
+
+	virtual void update() override;
+	virtual void render(tcod::Console& mainConsole) override;
+
+   protected:
+	tcod::Console controlsConsole;
+
+	static constexpr int CONTROL_WIDTH = 60;
+	static constexpr int CONTROL_HEIGHT = 30;
 };

@@ -7,6 +7,7 @@
 
 static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
 static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
+static constexpr auto LIGHT_BLUE = tcod::ColorRGB{63, 63, 255};
 
 std::filesystem::path Engine::getDataDir() {
 	static auto root_directory = std::filesystem::path{"."};
@@ -48,8 +49,17 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 	player->container = new Container(26);
 	actors.push_back(player);
 
+	level = 1;
+	stairs = new Actor(0, 0, '>', "stairs", WHITE);
+	stairs->blocks = false;
+	stairs->fovOnly = false;
+	actors.push_back(stairs);
+
 	// Create map (after actors)
 	map = new Map(MAP_WIDTH, MAP_HEIGHT);
+
+	// Make stairs the last actor
+	sendToBack(stairs);
 
 	// Create Gui
 	gui = new Gui();
@@ -69,7 +79,8 @@ void Engine::render(tcod::Console& console) {
 
 	// Render actors if in FoV
 	for (auto actor : actors)
-		if (map->isInFov(actor->x, actor->y)) actor->render(console);
+		if ((!actor->fovOnly && map->isExplored(actor->x, actor->y)) || map->isInFov(actor->x, actor->y))
+			actor->render(console);
 
 	// Render Gui elements (on top, or modify the base console colors)
 	gui->render(console);
@@ -82,8 +93,9 @@ SDL_AppResult Engine::iterate() {
 	// Update FoV if needed, currently only on first frame and on player movement
 	if (gameStatus == STARTUP) {
 		map->computeFov();
-		gui->message("Welcome stranger!\nPrepare to perish in the Tombs of the Ancient Kings.", RED);
-		gameStatus = IDLE;
+		gui->message("Welcome stranger!\nPress '?' to view controls.", RED);
+		new IntroductionMenu();
+		gameStatus = MENU;
 	} else if (gameStatus == PLAYER_TURN) {
 		// If turn is spent go to OTHER_ACTORS_TURN, else return to idle
 		player->update();  // status updated inside playerAi
@@ -101,6 +113,12 @@ SDL_AppResult Engine::iterate() {
 
 	// Update context with console
 	context.present(console);
+
+	static int lastOutput = -1;
+	if (lastOutput != gameStatus) {
+		std::cerr << gameStatus << std::endl;
+		lastOutput = gameStatus;
+	}
 	return SDL_APP_CONTINUE;
 }
 
@@ -173,6 +191,23 @@ Actor* Engine::getClosestMonster(int x, int y, float range) const {
 		}
 	}
 	return closest;
+}
+
+void Engine::nextLevel() {
+	level++;
+	gui->message("You descended deeper...", LIGHT_BLUE);
+	// Regenerate map
+	delete map;
+	// Delete all actors but player and stairs
+	std::vector<Actor*> actorsToBeDeleted = {};
+	for (auto actor : actors)
+		if (actor != player && actor != stairs) actorsToBeDeleted.push_back(actor);
+	for (auto actor : actorsToBeDeleted) removeActor(actor);
+	// Create a new map
+	map = new Map(MAP_WIDTH, MAP_HEIGHT);
+	sendToBack(stairs);
+	map->computeFov();
+	gameStatus = IDLE;
 }
 
 // Called on windows exit

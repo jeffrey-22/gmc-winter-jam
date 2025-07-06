@@ -96,9 +96,9 @@ void Map::computeFov() { map->computeFov(engine.player->x, engine.player->y, eng
 // Draw map background tiles on the console
 void Map::render(tcod::Console& console) const {
 	static const TCOD_color_t darkWall = {0, 0, 100};
-	static const TCOD_color_t darkGround = {50, 50, 150};
-	static const TCOD_color_t lightWall = {130, 110, 50};
-	static const TCOD_color_t lightGround = {200, 180, 50};
+	static const TCOD_color_t darkGround = {70, 40, 30};
+	static const TCOD_color_t lightWall = {130, 110, 150};
+	static const TCOD_color_t lightGround = {200, 130, 50};
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			if (console.in_bounds({x, y})) {
@@ -132,10 +132,6 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2) {
 		// Put the player in the first room
 		engine.player->x = (x1 + x2) / 2;
 		engine.player->y = (y1 + y2) / 2;
-	} else {
-		if (Random::instance().getBool(0.25)) {
-			engine.actors.push_back(new Actor((x1 + x2) / 2, (y1 + y2) / 2, 'X', "NPC", TCOD_color_RGB(255, 255, 0)));
-		}
 	}
 	Random rng = Random::instance();
 	// Add monsters
@@ -158,6 +154,9 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2) {
 		}
 		nbItems--;
 	}
+	// Set stairs position as last room created
+	engine.stairs->x = (x1 + x2) / 2;
+	engine.stairs->y = (y1 + y2) / 2;
 }
 
 // Add a monster

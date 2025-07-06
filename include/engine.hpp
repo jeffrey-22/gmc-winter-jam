@@ -41,10 +41,14 @@ class Engine {
 	Actor* getActor(int x, int y) const;
 	Actor* getClosestMonster(int x, int y, float range) const;
 
+	int level;
+	void nextLevel();
+
 	// List of actors that will be rendered and updated each frame or turn, including player, item on ground, etc.
 	// Memories of these will be released on destructing the engine class
 	std::vector<Actor*> actors;
 	Actor* player;
+	Actor* stairs;
 
 	Map* map;
 	Gui* gui;

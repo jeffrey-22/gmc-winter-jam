@@ -15,6 +15,9 @@ void PlayerAi::update(Actor* owner) {
 	bool isActionPickUp = false;
 	bool isActionInventory = false;
 	bool isActionDropItem = false;
+	bool isActionControlsMenu = false;
+	bool isActionDescend = false;
+	bool isActionRest = false;
 	switch (engine.lastKeyboardEvent.key) {
 		case SDLK_LEFT:
 		case SDLK_H:
@@ -60,9 +63,8 @@ void PlayerAi::update(Actor* owner) {
 			dx = 1;
 			dy = 1;
 			break;
-		case SDLK_PERIOD:
-		case SDLK_CLEAR:
-		case SDLK_KP_5:
+		case SDLK_S:
+			isActionRest = true;
 			break;
 		case SDLK_G:
 			isActionPickUp = true;
@@ -72,6 +74,14 @@ void PlayerAi::update(Actor* owner) {
 			break;
 		case SDLK_D:
 			isActionDropItem = true;
+			break;
+		case SDLK_SLASH:
+		case SDLK_QUESTION:
+			isActionControlsMenu = true;
+			break;
+		case SDLK_GREATER:
+		case SDLK_PERIOD:
+			isActionDescend = true;
 			break;
 		default:
 			break;
@@ -105,6 +115,18 @@ void PlayerAi::update(Actor* owner) {
 	} else if (isActionDropItem) {
 		new ItemDropMenu(owner);
 		return;
+	} else if (isActionControlsMenu) {
+		new ControlsMenu();
+		return;
+	} else if (isActionDescend) {
+		if (std::tie(owner->x, owner->y) == std::tie(engine.stairs->x, engine.stairs->y)) {
+			engine.nextLevel();
+		} else {
+			engine.gui->message(
+				"There are no stairs here.\nDescend by pressing > while standing\ndirectly on top of stairs.");
+		}
+	} else if (isActionRest) {
+		isTurnSpent = true;
 	}
 	if (isTurnSpent)
 		engine.gameStatus = Engine::OTHER_ACTORS_TURN;

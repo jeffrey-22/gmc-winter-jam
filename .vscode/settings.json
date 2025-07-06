@@ -28,6 +28,7 @@
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "files.associations": {
+    ".fantomasignore": "ignore",
     "algorithm": "cpp",
     "array": "cpp",
     "atomic": "cpp",
@@ -103,6 +104,9 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "fstream": "cpp"
+    "fstream": "cpp",
+    "cassert": "cpp",
+    "cinttypes": "cpp",
+    "set": "cpp"
   }
 }

@@ -3,11 +3,10 @@
 
 #include "main.hpp"
 
-static const int INVENTORY_WIDTH = 50;
-static const int INVENTORY_HEIGHT = 28;
-
 static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
 static constexpr auto LIGHT_GREY = tcod::ColorRGB{159, 159, 159};
+static constexpr auto DARK_RED = tcod::ColorRGB{45, 23, 23};
+static constexpr auto BLACK = tcod::ColorRGB{0, 0, 0};
 
 void Menu::closeWithState(Engine::GameStatus newStatus) {
 	engine.gui->isMenuOpen = false;
@@ -193,12 +192,12 @@ ItemPickMenu::ItemPickMenu(TargetSelector* invoker, Actor* owner, Actor* wearer,
 	  owner(owner),
 	  wearer(wearer),
 	  allowCancel(allowCancel),
-	  itemPickConsole(tcod::Console{INVENTORY_WIDTH, INVENTORY_HEIGHT}) {
+	  itemPickConsole(tcod::Console{InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT}) {
 	// Prepare item picking console
 	itemPickConsole.clear();
 	tcod::print_rect(
 		itemPickConsole,
-		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT},
+		{0, 0, InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT},
 		"Pick an item, Right click to cancel:",
 		LIGHT_GREY,
 		std::nullopt);
@@ -301,16 +300,18 @@ void ItemPickMenu::render(tcod::Console& mainConsole) {
 	tcod::blit(
 		mainConsole,
 		itemPickConsole,
-		{engine.CONSOLE_WIDTH / 2 - INVENTORY_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INVENTORY_HEIGHT / 2},
-		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT});
+		{engine.CONSOLE_WIDTH / 2 - InventoryMenu::INVENTORY_WIDTH / 2,
+		 engine.CONSOLE_HEIGHT / 2 - InventoryMenu::INVENTORY_HEIGHT / 2},
+		{0, 0, InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT});
 }
 
 ItemDropMenu::ItemDropMenu(Actor* inventoryOwner)
-	: inventoryOwner(inventoryOwner), itemDropConsole(tcod::Console{INVENTORY_WIDTH, INVENTORY_HEIGHT}) {
+	: inventoryOwner(inventoryOwner),
+	  itemDropConsole(tcod::Console{InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT}) {
 	itemDropConsole.clear();
 	tcod::print_rect(
 		itemDropConsole,
-		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT},
+		{0, 0, InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT},
 		"Drop which? Right click to cancel",
 		LIGHT_GREY,
 		std::nullopt);
@@ -379,6 +380,91 @@ void ItemDropMenu::render(tcod::Console& mainConsole) {
 	tcod::blit(
 		mainConsole,
 		itemDropConsole,
-		{engine.CONSOLE_WIDTH / 2 - INVENTORY_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INVENTORY_HEIGHT / 2},
-		{0, 0, INVENTORY_WIDTH, INVENTORY_HEIGHT});
+		{engine.CONSOLE_WIDTH / 2 - InventoryMenu::INVENTORY_WIDTH / 2,
+		 engine.CONSOLE_HEIGHT / 2 - InventoryMenu::INVENTORY_HEIGHT / 2},
+		{0, 0, InventoryMenu::INVENTORY_WIDTH, InventoryMenu::INVENTORY_HEIGHT});
+}
+
+IntroductionMenu::IntroductionMenu() : introductionConsole(tcod::Console{INTRO_WIDTH, INTRO_HEIGHT}) {
+	tcod::draw_rect(introductionConsole, {0, 0, INTRO_WIDTH, INTRO_HEIGHT}, 0, DARK_RED, DARK_RED);
+	std::string introductionText = tcod::stringf(
+		R"(They said it was punishment. A sentence earned. A fate sealed.
+
+Beneath the staircase is a place soaked in ash and sorrow.
+One step down, and you're no longer among the damned.
+You ARE the damned.
+
+This is the Underworld: a shifting maze of darkness, crawling with hateful creatures.
+
+No one ever escapes.
+No one ever survives.
+And yet...
+
+At the 20th Floor lies the exit. A way out.
+Few have seen it. Fewer still believe it exists.
+
+You have nothing left but your will. Your wits.
+Descend, fight, die... or do the impossible.
+
+Escape. If you feel like trying.
+
+
+
+
+
+
+
+
+                [Press any key to continue])");
+	tcod::print_rect(introductionConsole, {0, 0, INTRO_WIDTH, INTRO_HEIGHT}, introductionText, WHITE, DARK_RED);
+}
+
+void IntroductionMenu::update() {
+	if (engine.lastEventType == SDL_EVENT_MOUSE_BUTTON_DOWN || engine.lastEventType == SDL_EVENT_KEY_DOWN) {
+		closeWithState(Engine::IDLE);
+		return;
+	}
+	engine.gameStatus = Engine::MENU;
+}
+
+void IntroductionMenu::render(tcod::Console& mainConsole) {
+	tcod::blit(
+		mainConsole,
+		introductionConsole,
+		{engine.CONSOLE_WIDTH / 2 - INTRO_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - INTRO_HEIGHT / 2},
+		{0, 0, INTRO_WIDTH, INTRO_HEIGHT});
+}
+
+ControlsMenu::ControlsMenu() : controlsConsole(tcod::Console{CONTROL_WIDTH, CONTROL_HEIGHT}) {
+	tcod::draw_rect(controlsConsole, {0, 0, CONTROL_WIDTH, CONTROL_HEIGHT}, 0, BLACK, BLACK);
+	std::string controlsText = tcod::stringf(
+		R"(                          Controls
+
+Movement / Attack - yuhjklbn (vim keys) or 12346789 (numpad)
+
+Open inventory - i
+
+Rest for a turn - s
+
+Descend the stairs - >
+		)");
+	tcod::print_rect(controlsConsole, {0, 0, CONTROL_WIDTH, CONTROL_HEIGHT}, controlsText, WHITE, BLACK);
+}
+
+void ControlsMenu::update() {
+	if (engine.lastEventType == SDL_EVENT_MOUSE_BUTTON_DOWN || engine.lastEventType == SDL_EVENT_KEY_DOWN) {
+		closeWithState(Engine::IDLE);
+		return;
+	}
+	engine.gameStatus = Engine::MENU;
+}
+
+void ControlsMenu::render(tcod::Console& mainConsole) {
+	tcod::blit(
+		mainConsole,
+		controlsConsole,
+		{engine.CONSOLE_WIDTH / 2 - CONTROL_WIDTH / 2, engine.CONSOLE_HEIGHT / 2 - CONTROL_HEIGHT / 2},
+		{0, 0, CONTROL_WIDTH, CONTROL_HEIGHT},
+		0.95F,
+		0.8F);
 }

@@ -9,6 +9,7 @@ class Actor {
 	TCOD_color_t color;	 // color
 	const char* name;  // actor's name in message logs
 	bool blocks;  // can we walk on this actor?
+	bool fovOnly;  // only display when in fov
 
 	Attacker* attacker;	 // component, deals damage
 	Destructible* destructible;	 // component, can be damaged
