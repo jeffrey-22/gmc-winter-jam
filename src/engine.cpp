@@ -43,10 +43,10 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 
 	// Create actors
 	player = new Actor(console.get_width() / 2, console.get_height() / 2, '@', "player", {200, 210, 220});
-	player->destructible = new PlayerDestructible(30, 2, "your cadaver");
+	player->destructible = new PlayerDestructible(50, 2, "your cadaver");
 	player->attacker = new Attacker(5);
 	player->ai = new PlayerAi();
-	player->container = new Container(26);
+	player->container = new Container(36);
 	actors.push_back(player);
 
 	level = 1;
@@ -63,6 +63,8 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 
 	// Create Gui
 	gui = new Gui();
+
+	nameTracker = new NameTracker(new Random());
 
 	// Initialize other variables
 	fovRadius = 10;
@@ -114,11 +116,6 @@ SDL_AppResult Engine::iterate() {
 	// Update context with console
 	context.present(console);
 
-	static int lastOutput = -1;
-	if (lastOutput != gameStatus) {
-		std::cerr << gameStatus << std::endl;
-		lastOutput = gameStatus;
-	}
 	return SDL_APP_CONTINUE;
 }
 

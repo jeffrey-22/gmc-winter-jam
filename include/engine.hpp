@@ -52,6 +52,7 @@ class Engine {
 
 	Map* map;
 	Gui* gui;
+	NameTracker* nameTracker;
 
 	int fovRadius;
 

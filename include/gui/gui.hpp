@@ -38,7 +38,8 @@ class Gui {
 		const char* name,
 		float value,
 		float maxValue,
-		const tcod::ColorRGB& barColor,
+		const tcod::ColorRGB& barColorFull,
+		const tcod::ColorRGB& barColorEmpty,
 		const tcod::ColorRGB& backColor);
 
 	void renderMouseLook();

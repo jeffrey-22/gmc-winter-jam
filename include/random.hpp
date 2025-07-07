@@ -4,6 +4,7 @@
 
 class Random {
    public:
+	Random();
 	static Random& instance();
 	int operator()();
 	int getBoundedInt(int minValue, int maxValue);
@@ -13,9 +14,8 @@ class Random {
 	double getBoundedDouble(double minValue, double maxValue);
 	void resetSeed(unsigned int newSeed);
 	void resetSeed();
+	std::mt19937 rng;
 
    private:
-	Random();
-	std::mt19937 rng;
 	static unsigned getSystemClock();
 };

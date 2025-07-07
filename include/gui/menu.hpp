@@ -29,15 +29,22 @@ class InventoryMenu : public Menu {
 	virtual void update() override;
 	virtual void render(tcod::Console& mainConsole) override;
 
+	void useItemAtIndex(int itemIndex);
+
    protected:
+	int selectedIndex;
 	tcod::Console inventoryConsole;
 	Actor* inventoryOwner;
 
-	friend class ItemDropMenu;
+	bool onCallMenu;
+	std::string callString;
+
+	void renderInventory();
+
 	friend class ItemPickMenu;
 
 	static constexpr int INVENTORY_WIDTH = 50;
-	static constexpr int INVENTORY_HEIGHT = 28;
+	static constexpr int INVENTORY_HEIGHT = 38;
 };
 
 class TilePickMenu : public Menu {
@@ -83,19 +90,6 @@ class ItemPickMenu : public Menu {
 	Actor* wearer;
 	bool allowCancel;
 	int invokerShortcutChar;
-};
-
-class ItemDropMenu : public Menu {
-   public:
-	ItemDropMenu(Actor* inventoryOwner);
-	~ItemDropMenu() = default;
-
-	virtual void update() override;
-	virtual void render(tcod::Console& mainConsole) override;
-
-   protected:
-	tcod::Console itemDropConsole;
-	Actor* inventoryOwner;
 };
 
 class IntroductionMenu : public Menu {

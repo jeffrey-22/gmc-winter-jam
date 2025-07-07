@@ -10,6 +10,7 @@ class Pickable {
 
 	virtual bool pick(Actor* owner, Actor* wearer);
 	virtual void drop(Actor* owner, Actor* wearer);
+	virtual void swap(Actor* owner, Actor* groundItem, Actor* wearer);
 
 	/*
 		Owner is the pickable item, wearer is the user of the item.

@@ -14,7 +14,7 @@ Pickable::~Pickable() {
 }
 
 // Put owner into wearer's inventory, now owner is only in container and not in main actor list
-// Return if item is successfully put
+// Return if item is successfully put, fails if wearer has no container component or if container is full
 bool Pickable::pick(Actor* owner, Actor* wearer) {
 	if (wearer->container && wearer->container->add(owner)) {
 		engine.removeActor(owner);
@@ -30,7 +30,34 @@ void Pickable::drop(Actor* owner, Actor* wearer) {
 		engine.sendToBack(owner);
 		owner->x = wearer->x;
 		owner->y = wearer->y;
-		engine.gui->message(tcod::stringf("%s drops a %s.", wearer->name, owner->name), LIGHT_GREY);
+		if (wearer == engine.player)
+			engine.gui->message(tcod::stringf("You drop a %s.", engine.nameTracker->getDisplayName(owner)), LIGHT_GREY);
+		else
+			engine.gui->message(
+				tcod::stringf("%s drops a %s.", wearer->name, engine.nameTracker->getDisplayName(owner)), LIGHT_GREY);
+	}
+}
+
+void Pickable::swap(Actor* owner, Actor* groundItem, Actor* wearer) {
+	if (wearer->container) {
+		wearer->container->remove(owner);
+		engine.actors.push_back(owner);
+		engine.sendToBack(owner);
+		owner->x = wearer->x;
+		owner->y = wearer->y;
+		if (wearer == engine.player)
+			engine.gui->message(
+				tcod::stringf("You swap %s\nwith the item on the ground.", engine.nameTracker->getDisplayName(owner)),
+				LIGHT_GREY);
+		else
+			engine.gui->message(
+				tcod::stringf(
+					"%s swaps %s\nwith the item on the ground.",
+					wearer->name,
+					engine.nameTracker->getDisplayName(owner)),
+				LIGHT_GREY);
+		wearer->container->add(groundItem);
+		engine.removeActor(groundItem);
 	}
 }
 

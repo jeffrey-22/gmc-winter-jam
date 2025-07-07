@@ -14,6 +14,7 @@ static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
 static constexpr auto LIGHT_RED = tcod::ColorRGB{255, 63, 63};
 static constexpr auto DARKER_RED = tcod::ColorRGB{127, 0, 0};
 static constexpr auto LIGHT_GREY = tcod::ColorRGB{159, 159, 159};
+static constexpr auto LIGHT_GREEN = tcod::ColorRGB{63, 255, 63};
 
 Gui::Gui() : guiConsole(tcod::Console{engine.MAP_WIDTH, PANEL_HEIGHT}), isMenuOpen(false), menu(NULL) { log.clear(); }
 
@@ -63,6 +64,7 @@ void Gui::render(tcod::Console& mainConsole) {
 		"HP",
 		engine.player->destructible->hp,
 		engine.player->destructible->maxHp,
+		LIGHT_GREEN,
 		LIGHT_RED,
 		DARKER_RED);
 	// Draw the message log
@@ -78,6 +80,10 @@ void Gui::render(tcod::Console& mainConsole) {
 	}
 	// Draw actor names selected by mouse, if in FoV
 	renderMouseLook();
+
+	// Draw Dungeon Level
+	tcod::print(guiConsole, {2, 3}, tcod::stringf("Floor %d", engine.level), WHITE, std::nullopt);
+
 	// Blit GUI console to the main console
 	tcod::blit(mainConsole, guiConsole, {0, engine.MAP_HEIGHT}, {0, 0, engine.MAP_WIDTH, PANEL_HEIGHT}, 0.7f, 0.7f);
 
@@ -94,14 +100,24 @@ void Gui::renderBar(
 	const char* name,
 	float value,
 	float maxValue,
-	const tcod::ColorRGB& barColor,
+	const tcod::ColorRGB& barColorFull,
+	const tcod::ColorRGB& barColorEmpty,
 	const tcod::ColorRGB& backColor) {
 	// Fill the background of the bar
 	tcod::draw_rect(guiConsole, {x, y, width, 1}, 0, std::nullopt, backColor);
+	float healthRatio = value / maxValue;
 	int barWidth = (int)(value / maxValue * width);
+	if (value <= 0.0001)
+		barWidth = 0;
+	else
+		barWidth = std::max(barWidth, 1);
 	if (barWidth > 0) {
 		// Draw the bar
-		tcod::draw_rect(guiConsole, {x, y, barWidth, 1}, 0, std::nullopt, barColor);
+		tcod::ColorRGB barDisplayColor;
+		barDisplayColor.r = (uint8_t)(healthRatio * barColorFull.r + (1.0f - healthRatio) * barColorEmpty.r);
+		barDisplayColor.g = (uint8_t)(healthRatio * barColorFull.g + (1.0f - healthRatio) * barColorEmpty.g);
+		barDisplayColor.b = (uint8_t)(healthRatio * barColorFull.b + (1.0f - healthRatio) * barColorEmpty.b);
+		tcod::draw_rect(guiConsole, {x, y, barWidth, 1}, 0, std::nullopt, barDisplayColor);
 	}
 	// Display HP info text
 	std::string hpInfoText = tcod::stringf("%s : %g/%g", name, value, maxValue);
@@ -118,14 +134,18 @@ void Gui::renderMouseLook() {
 	bool first = true;
 	for (auto actor : engine.actors) {
 		// Find actors under the mouse cursor
-		bool corpseOrItem = (actor->destructible && actor->destructible->isDead()) || actor->pickable;
-		if (corpseOrItem && actor->x == cx && actor->y == cy) {
+		bool corpseOrEnemyOrItem = (actor->destructible && actor->destructible->isDead()) || actor->pickable ||
+								   (actor->destructible && !actor->destructible->isDead() && actor != engine.player);
+		if (corpseOrEnemyOrItem && actor->x == cx && actor->y == cy) {
 			if (!first) {
 				allNames += ", ";
 			} else {
 				first = false;
 			}
-			allNames += actor->name;
+			if (actor->pickable)
+				allNames += engine.nameTracker->getDisplayName(actor);
+			else
+				allNames += actor->name;
 		}
 	}
 	// Display the list of actors under the mouse cursor

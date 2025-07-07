@@ -14,4 +14,5 @@ class Container {
 	bool add(Actor* actor);
 	bool isIndexValid(int index);
 	void remove(Actor* actor);
+	void sortItems();
 };

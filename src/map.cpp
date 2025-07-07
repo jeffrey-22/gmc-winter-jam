@@ -7,7 +7,7 @@ static const int ROOM_MIN_SIZE = 6;
 
 static const int MAX_ROOM_MONSTERS = 3;
 
-static const int MAX_ROOM_ITEMS = 2;
+static const int MAX_ROOM_ITEMS = 100;	// TODO: adjust
 
 static auto constexpr LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 
@@ -185,7 +185,7 @@ void Map::addItem(int x, int y) {
 	Random rng = Random::instance();
 	int dice = rng.getInt(0, 100);
 
-	if (dice < 10) {
+	if (dice < 20) {
 		Actor* healthPotion = new Actor(x, y, '!', "health potion", VIOLET);
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Pickable(
@@ -194,10 +194,11 @@ void Map::addItem(int x, int y) {
 		engine.actors.push_back(healthPotion);
 		// Items visuals should be at the back to not hide actors standing over them
 		engine.sendToBack(healthPotion);
-	} else if (dice < 10 + 10) {
+	} else if (dice < 20 + 20) {
 		// create a scroll of lightning bolt
 		Actor* scrollOfLightningBolt = new Actor(x, y, '?', "scroll of lightning bolt", LIGHT_YELLOW);
 		scrollOfLightningBolt->blocks = false;
+		scrollOfLightningBolt->fovOnly = false;
 		scrollOfLightningBolt->pickable = new Pickable(
 			new TargetSelector(TargetSelector::CLOSEST_MONSTER, 5),
 			new HealthEffect(
@@ -206,10 +207,11 @@ void Map::addItem(int x, int y) {
 				"The damage is %g hit points."));
 		engine.actors.push_back(scrollOfLightningBolt);
 		engine.sendToBack(scrollOfLightningBolt);
-	} else if (dice < 20 + 10 + 10) {
+	} else if (dice < 20 + 20 + 20) {
 		// create a scroll of fireball
 		Actor* scrollOfFireball = new Actor(x, y, '?', "scroll of fireball", LIGHT_YELLOW);
 		scrollOfFireball->blocks = false;
+		scrollOfFireball->fovOnly = false;
 		scrollOfFireball->pickable = new Pickable(
 			new TargetSelector(TargetSelector::SELECTED_RANGE, 3),
 			new HealthEffect(-12, "The %s gets burned for %g hit points."));
@@ -217,8 +219,9 @@ void Map::addItem(int x, int y) {
 		engine.sendToBack(scrollOfFireball);
 	} else {
 		// create a scroll of confusion
-		Actor* scrollOfConfusion = new Actor(x, y, '#', "scroll of confusion", LIGHT_YELLOW);
+		Actor* scrollOfConfusion = new Actor(x, y, '?', "scroll of confusion", LIGHT_YELLOW);
 		scrollOfConfusion->blocks = false;
+		scrollOfConfusion->fovOnly = false;
 		scrollOfConfusion->pickable = new Pickable(
 			new TargetSelector(TargetSelector::SELECTED_MONSTER, 5),
 			new AiChangeEffect(

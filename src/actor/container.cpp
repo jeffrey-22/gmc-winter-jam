@@ -15,6 +15,7 @@ bool Container::add(Actor* actor) {
 		return false;
 	}
 	inventory.push_back(actor);
+	sortItems();
 	return true;
 }
 
@@ -39,3 +40,9 @@ bool Container::use(Actor* actor, Actor* wearer) {
 }
 
 bool Container::isIndexValid(int index) { return index >= 0 && index < inventory.size(); }
+
+void Container::sortItems() {
+	std::sort(inventory.begin(), inventory.end(), [&](const Actor* a, const Actor* b) {
+		return engine.nameTracker->getDisplayName(a) < engine.nameTracker->getDisplayName(b);
+	});
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libtcod.hpp"
+class Random;
 class Actor;
 class Ai;
 class Attacker;
@@ -10,6 +11,7 @@ class Container;
 class Map;
 class Gui;
 class Menu;
+class NameTracker;
 class Effect;
 class TargetSelector;
 #include "actor/actor.hpp"
@@ -23,5 +25,6 @@ class TargetSelector;
 #include "engine.hpp"
 #include "gui/gui.hpp"
 #include "gui/menu.hpp"
+#include "gui/nametracker.hpp"
 #include "map.hpp"
 #include "random.hpp"

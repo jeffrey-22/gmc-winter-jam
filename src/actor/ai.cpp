@@ -14,7 +14,6 @@ void PlayerAi::update(Actor* owner) {
 	int dx = 0, dy = 0;
 	bool isActionPickUp = false;
 	bool isActionInventory = false;
-	bool isActionDropItem = false;
 	bool isActionControlsMenu = false;
 	bool isActionDescend = false;
 	bool isActionRest = false;
@@ -72,9 +71,6 @@ void PlayerAi::update(Actor* owner) {
 		case SDLK_I:
 			isActionInventory = true;
 			break;
-		case SDLK_D:
-			isActionDropItem = true;
-			break;
 		case SDLK_SLASH:
 		case SDLK_QUESTION:
 			isActionControlsMenu = true;
@@ -100,20 +96,20 @@ void PlayerAi::update(Actor* owner) {
 				if (actor->pickable->pick(actor, owner)) {
 					foundItem = true;
 					isTurnSpent = true;
-					engine.gui->message(tcod::stringf("You picked up %s.", actor->name));
+					engine.gui->message(tcod::stringf("You picked up %s.", engine.nameTracker->getDisplayName(actor)));
 					break;
 				} else {
 					engine.gui->message(tcod::stringf("Your inventory is full!"));
 					break;
 				}
 			}
+		if (!foundItem) {
+			engine.gui->message(tcod::stringf("There's nothing to pick up here."));
+		}
 	} else if (isActionInventory) {
 		openInventory(owner);
 		// Game status will be updated after inventory opening is complete
 		// So we could return here and not update game state
-		return;
-	} else if (isActionDropItem) {
-		new ItemDropMenu(owner);
 		return;
 	} else if (isActionControlsMenu) {
 		new ControlsMenu();
@@ -144,10 +140,19 @@ bool PlayerAi::moveOrAttack(Actor* owner, int targetx, int targety) {
 			return true;
 		}
 	}
-	// look for corpses
+	// look for corpses and items
 	for (auto actor : engine.actors) {
-		if (actor->destructible && actor->destructible->isDead() && actor->x == targetx && actor->y == targety) {
+		if (actor->x != targetx || actor->y != targety) continue;
+		if (actor->destructible && actor->destructible->isDead()) {
 			engine.gui->message(tcod::stringf("There's a %s here\n", actor->name));
+		} else if (actor->pickable) {
+			if (actor->pickable->pick(actor, owner)) {
+				engine.gui->message(tcod::stringf("You picked up %s.", engine.nameTracker->getDisplayName(actor)));
+			} else {
+				engine.gui->message(
+					tcod::stringf(
+						"Your inventory is full, so you walked over\n%s.", engine.nameTracker->getDisplayName(actor)));
+			}
 		}
 	}
 	owner->x = targetx;
