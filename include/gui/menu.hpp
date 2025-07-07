@@ -89,7 +89,7 @@ class ItemPickMenu : public Menu {
 	Actor* owner;
 	Actor* wearer;
 	bool allowCancel;
-	int invokerShortcutChar;
+	int invokerShortcutIndex;
 };
 
 class IntroductionMenu : public Menu {

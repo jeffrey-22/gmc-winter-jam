@@ -104,8 +104,8 @@ void InventoryMenu::update() {
 			case SDLK_D:
 				gotDrop = true;
 				break;
-			case SDLK_ESCAPE:
 			case SDLK_I:
+			case SDLK_ESCAPE:
 				gotEsc = true;
 				break;
 			default:
@@ -214,7 +214,6 @@ void InventoryMenu::update() {
 				gotAscii = '9';
 				break;
 			case SDLK_ESCAPE:
-			case SDLK_I:
 				gotEsc = true;
 				break;
 			default:
@@ -429,7 +428,8 @@ void TilePickMenu::render(tcod::Console& mainConsole) {
 				TCOD_ColorRGBA col = mainConsole.at({cx, cy}).bg;
 
 				// Highlight selectable tiles by greenifying
-				float p = 0.3f;
+				float p = 0.5f;
+				if (engine.lastMouseTileX == cx && engine.lastMouseTileY == cy) p = 0.8f;
 				TCOD_ColorRGBA hiCol = {120, 255, 120};
 				col = {
 					static_cast<uint8_t>(col.r * p + hiCol.r * (1 - p)),
@@ -458,13 +458,13 @@ ItemPickMenu::ItemPickMenu(TargetSelector* invoker, Actor* owner, Actor* wearer,
 		LIGHT_GREY,
 		std::nullopt);
 
-	invokerShortcutChar = -1;
+	invokerShortcutIndex = -1;
 	int shortcut = 'a';
 	int y = 1;
 	for (auto actor : wearer->container->inventory) {
 		auto color = WHITE;
 		if (actor == owner) {
-			invokerShortcutChar = shortcut;
+			invokerShortcutIndex = y - 1;
 			color = LIGHT_GREY;
 		}
 		tcod::print(
@@ -475,6 +475,10 @@ ItemPickMenu::ItemPickMenu(TargetSelector* invoker, Actor* owner, Actor* wearer,
 			std::nullopt);
 		y++;
 		shortcut++;
+		if (y == 27)
+			shortcut = '1';
+		else if (y == 36)
+			shortcut = '0';
 	}
 }
 
@@ -502,6 +506,7 @@ void ItemPickMenu::handleCancel() {
 
 void ItemPickMenu::update() {
 	bool gotAtoZ = false;
+	bool got0to9 = false;
 	bool gotEsc = false;
 	char gotAscii;
 
@@ -519,6 +524,9 @@ void ItemPickMenu::update() {
 	if (engine.lastKeyboardEvent.key >= SDLK_A && engine.lastKeyboardEvent.key <= SDLK_Z) {
 		gotAtoZ = true;
 		gotAscii = engine.lastKeyboardEvent.key - SDLK_A + 'a';
+	} else if (engine.lastKeyboardEvent.key >= SDLK_0 && engine.lastKeyboardEvent.key <= SDLK_9) {
+		got0to9 = true;
+		gotAscii = engine.lastKeyboardEvent.key - SDLK_0 + '0';
 	} else {
 		switch (engine.lastKeyboardEvent.key) {
 			case SDLK_ESCAPE:
@@ -534,9 +542,17 @@ void ItemPickMenu::update() {
 		return;
 	}
 	if (gotAtoZ) {
-		// Got A-Z, check if its a usable item, if so use it and continue to OTHER_ACTORS_TURN
-		int itemIndex = gotAscii - 'a';
-		if (wearer->container->isIndexValid(itemIndex) && itemIndex + 'a' != invokerShortcutChar) {
+		// Got A-Z 0-9, check if its a usable item, if so use it and continue to OTHER_ACTORS_TURN
+		int itemIndex;
+		if (gotAtoZ)
+			itemIndex = gotAscii - 'a';
+		else {
+			if (gotAscii == '0')
+				itemIndex = 35;
+			else
+				itemIndex = gotAscii - '1' + 26;
+		}
+		if (wearer->container->isIndexValid(itemIndex) && itemIndex != invokerShortcutIndex) {
 			auto itemActor = wearer->container->inventory[itemIndex];
 			Menu* nextMenu = invoker->actorPickCallback(owner, wearer, false, itemActor, this);
 			if (nextMenu == NULL) {

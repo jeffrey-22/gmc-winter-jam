@@ -42,6 +42,14 @@ float Destructible::heal(float amount) {
 	return amount;
 }
 
+// Change max stats, returns actual hp increment
+float Destructible::changeStats(float deltaMaxHp, float deltaDefense) {
+	hp += deltaMaxHp;
+	maxHp += deltaMaxHp;
+	defense += deltaDefense;
+	return deltaMaxHp;
+}
+
 MonsterDestructible::MonsterDestructible(float maxHp, float defense, const char* corpseName)
 	: Destructible(maxHp, defense, corpseName) {}
 
@@ -50,7 +58,7 @@ PlayerDestructible::PlayerDestructible(float maxHp, float defense, const char* c
 
 void MonsterDestructible::die(Actor* owner) {
 	// Transform it into a nasty corpse! It doesn't block, can't be attacked and doesn't move
-	engine.gui->message(tcod::stringf("%s is dead", owner->name));
+	engine.gui->message(tcod::stringf("%s is dead.", owner->name));
 	Destructible::die(owner);
 }
 

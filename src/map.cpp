@@ -9,6 +9,11 @@ static const int MAX_ROOM_MONSTERS = 3;
 
 static const int MAX_ROOM_ITEMS = 100;	// TODO: adjust
 
+static constexpr int MAX_ID_SCROLL_BY_FLOOR[20] = {4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static constexpr int MIN_TOTAL_ITEMS_BY_FLOOR[20] = {13, 9, 8, 5, 5, 5, 4, 4, 4, 4, 4, 4, 7, 4, 4, 7, 4, 4, 4, 4};
+static constexpr int MAX_TOTAL_ITEMS_BY_FLOOR[20] = {13, 9, 8, 7, 7, 6, 6, 6, 6, 6, 6, 6, 9, 6, 6, 9, 6, 6, 6, 6};
+static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3};
+
 static auto constexpr LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 
 // Bsp Listener class for randomly creating rooms in the Bsp tree algorithm
@@ -185,16 +190,18 @@ void Map::addItem(int x, int y) {
 	Random rng = Random::instance();
 	int dice = rng.getInt(0, 100);
 
-	if (dice < 20) {
-		Actor* healthPotion = new Actor(x, y, '!', "health potion", VIOLET);
+	if (dice < 100) {
+		Actor* healthPotion = new Actor(x, y, '!', "Potion of Full Healing", VIOLET);
 		healthPotion->blocks = false;
 		healthPotion->pickable = new Pickable(
 			new TargetSelector(TargetSelector::WEARER_HIMSELF, 0),
-			new HealthEffect(4, "%s used the health potion and recovered %g HP!"));
+			new HealthEffect(800, 10, "%s used the healing potion and recovered %g HP!"));
 		engine.actors.push_back(healthPotion);
 		// Items visuals should be at the back to not hide actors standing over them
 		engine.sendToBack(healthPotion);
-	} else if (dice < 20 + 20) {
+	}
+	/*
+	else if (dice < 20 + 20) {
 		// create a scroll of lightning bolt
 		Actor* scrollOfLightningBolt = new Actor(x, y, '?', "scroll of lightning bolt", LIGHT_YELLOW);
 		scrollOfLightningBolt->blocks = false;
@@ -229,4 +236,5 @@ void Map::addItem(int x, int y) {
 		engine.actors.push_back(scrollOfConfusion);
 		engine.sendToBack(scrollOfConfusion);
 	}
+	*/
 }

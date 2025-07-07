@@ -10,11 +10,11 @@ class Effect {
 
 class HealthEffect : public Effect {
    public:
-	float amount;
+	float amount, maxAmountOnFull;
 	const char* message;
 
 	// message always contains a parameter for the target name (%s) and a parameter for the amount (%g)
-	HealthEffect(float amount, const char* message);
+	HealthEffect(float amount, float maxAmountOnFull, const char* message);
 	bool applyTo(Actor* actor);
 };
 

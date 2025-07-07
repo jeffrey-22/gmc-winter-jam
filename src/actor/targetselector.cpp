@@ -50,6 +50,10 @@ Menu* TargetSelector::selectTargets(Actor* owner, Actor* wearer, Menu* inventory
 			if (list.empty()) engine.gui->message("Cannot find oneself to use on.", LIGHT_GREY);
 			owner->pickable->applyEffects(owner, wearer, false, list);
 		} break;
+		case OTHER_ITEM_FROM_INVENTORY: {
+			engine.gui->message("Pick an item from inventory to use on.", CYAN);
+			return new ItemPickMenu(this, owner, wearer, true);
+		} break;
 	}
 	return NULL;
 }
@@ -86,5 +90,17 @@ Menu* TargetSelector::tilePickCallback(
 
 Menu* TargetSelector::actorPickCallback(
 	Actor* owner, Actor* wearer, bool isCancelled, Actor* selected, Menu* callbackMenu) {
-	return NULL;
+	std::vector<Actor*> list = {};
+	// Allow cancelling, going back to inventory (not spending the turn)
+	if (isCancelled) {
+		owner->pickable->applyEffects(owner, wearer, true, list);
+		return new InventoryMenu(wearer);
+	}
+	switch (type) {
+		case OTHER_ITEM_FROM_INVENTORY: {
+			if (selected) list.push_back(selected);
+			owner->pickable->applyEffects(owner, wearer, false, list);
+			return NULL;
+		} break;
+	}
 }

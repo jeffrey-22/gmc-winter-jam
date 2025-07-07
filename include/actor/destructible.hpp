@@ -16,6 +16,7 @@ class Destructible {
 	float takeDamage(Actor* owner, float damage);
 	virtual void die(Actor* owner);
 	float heal(float amount);
+	float changeStats(float deltaMaxHp, float deltaDefense);
 };
 
 class MonsterDestructible : public Destructible {

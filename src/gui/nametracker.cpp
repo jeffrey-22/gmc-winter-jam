@@ -11,7 +11,14 @@ NameTracker::NameTracker(Random* rng) : rng(rng) {
 
 	// TODO: fill
 
-	defaultNames['!']["health potion"] = "? bubbly potion";
+	defaultNames['!']["Potion of Full Healing"] = "Clear Potion";
+	defaultNames['!']["Potion of Strength"] = "Bubbly Potion";
+	defaultNames['!']["Potion of Protection"] = "Thick potion";
+	defaultNames['!']["Potion of Poison"] = "Sticky potion";
+	defaultNames['!']["Potion of Amnesia"] = "Smoky potion";
+	defaultNames['!']["Potion of Confusion"] = "Glowing potion";
+	defaultNames['!']["Potion of Fire"] = "Unstable potion";
+
 	defaultNames['?']["scroll of lightning bolt"] = "? green scroll";
 	defaultNames['?']["scroll of confusion"] = "? yellow scroll";
 	defaultNames['?']["scroll of fireball"] = "? red scroll";
@@ -29,7 +36,18 @@ NameTracker::NameTracker(Random* rng) : rng(rng) {
 			pair.second = names[nameIndex++];
 		}
 	}
-	descriptions["health potion"] = "\nHeals the user by 4 HP!\n";
+
+	descriptions["Potion of Full Healing"] =
+		"\nFully heals the user along with curing status effects.\nIf used while HP is full, increases max HP by 10.\n";
+	descriptions["Potion of Strength"] = "\nPermenantly increases the user's attack power\n";
+	descriptions["Potion of Protection"] =
+		"\nPermenantly increases the user's defense power,\nwhile increasing their max HP by 25.\n";
+	descriptions["Potion of Poison"] = "\nPermenantly lowers the user's attack power.\n";
+	descriptions["Potion of Amnesia"] = "\nLet the user forget what the identified items were.\n";
+	descriptions["Potion of Confusion"] = "\nConfuse the user, causing them to go in random directions.\n";
+	descriptions["Potion of Fire"] =
+		"\nSets the user on fire, which burns for 5HP per turn\nand lasts for 20 turns.\nDrinking any other potion "
+		"cures burning.\n";
 }
 
 NameTracker::~NameTracker() { delete rng; }
@@ -58,7 +76,7 @@ const char* NameTracker::getDisplayName(const Actor* itemActor) {
 
 const char* NameTracker::getDescription(const Actor* itemActor) {
 	if (!identifyStatus[std::string(itemActor->name)])
-		return "\nThis item is unidentified,\nso it's impossible to tell its nature.\nUsing this item or "
-			   "a scroll of identify\nidentifies all items of this type.\n";
+		return "\nThis item is unidentified,\nso it's impossible to tell its nature as of now.\nUsing this item or "
+			   "reading a scroll of identify\nwould identify all items of this type.\n";
 	return descriptions[std::string(itemActor->name)].c_str();
 }

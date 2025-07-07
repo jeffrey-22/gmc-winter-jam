@@ -6,6 +6,7 @@
 class Pickable {
    public:
 	Pickable(TargetSelector* selector, Effect* effect);
+	Pickable();
 	virtual ~Pickable();
 
 	virtual bool pick(Actor* owner, Actor* wearer);
@@ -29,7 +30,7 @@ class Pickable {
 	virtual Menu* use(Actor* owner, Actor* wearer, Menu* inventoryMenu = NULL);
 
 	/*
-		Eventually called after using use()
+		Eventually called in the default implementation of use()
 		Callback function after using the item.
 		Actually applies effects and/or delete the item.
 	*/

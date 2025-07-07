@@ -191,6 +191,11 @@ Actor* Engine::getClosestMonster(int x, int y, float range) const {
 }
 
 void Engine::nextLevel() {
+	if (level == 20) {
+		gui->message("You found the exit and escaped!", LIGHT_BLUE);
+		gameStatus = VICTORY;
+		return;
+	}
 	level++;
 	gui->message("You descended deeper...", LIGHT_BLUE);
 	// Regenerate map

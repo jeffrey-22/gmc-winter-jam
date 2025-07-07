@@ -8,6 +8,8 @@ static auto constexpr LIGHT_GREY = tcod::ColorRGB{159, 159, 159};
 
 Pickable::Pickable(TargetSelector* selector, Effect* effect) : selector(selector), effect(effect) {}
 
+Pickable::Pickable() : selector(NULL), effect(NULL) {}
+
 Pickable::~Pickable() {
 	if (selector) delete selector;
 	if (effect) delete effect;

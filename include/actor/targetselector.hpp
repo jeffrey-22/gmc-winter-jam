@@ -4,8 +4,14 @@
 
 class TargetSelector {
    public:
-	// SELECTED_RANGE:
-	enum SelectorType { CLOSEST_MONSTER, SELECTED_MONSTER, WEARER_RANGE, SELECTED_RANGE, WEARER_HIMSELF };
+	enum SelectorType {
+		CLOSEST_MONSTER,
+		SELECTED_MONSTER,
+		WEARER_RANGE,
+		SELECTED_RANGE,
+		WEARER_HIMSELF,
+		OTHER_ITEM_FROM_INVENTORY
+	};
 	TargetSelector(SelectorType type, float range);
 
 	// Returns new menu on call, wait for callback in owner's pickable component
