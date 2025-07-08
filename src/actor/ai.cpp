@@ -268,6 +268,9 @@ void TemporaryAi::applyTo(Actor* actor) {
 ConfusedMonsterAi::ConfusedMonsterAi(int nbTurns) : TemporaryAi(nbTurns) {}
 
 void ConfusedMonsterAi::update(Actor* owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
 	Random& rng = Random::instance();
 	int dx = rng.getInt(-1, 1);
 	int dy = rng.getInt(-1, 1);
