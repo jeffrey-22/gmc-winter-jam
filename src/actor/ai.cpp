@@ -448,7 +448,7 @@ void DragonAi::update(Actor* owner) {
 	if (Random::instance().getBool(0.05)) {
 		if (engine.player && engine.player->destructible && !engine.player->destructible->isDead())
 			engine.gui->message("The Dragon blows fire at you!", RED);
-		owner->attacker->burn(owner, engine.player, 30.0F);
+		owner->attacker->burn(owner, engine.player, 20.0F);
 	} else
 		MonsterAi::update(owner);
 }

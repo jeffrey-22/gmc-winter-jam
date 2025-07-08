@@ -96,7 +96,7 @@ void Enemy::setGoblin(Actor* enemy) {
 	enemy->ch = 'g';
 	enemy->name = "goblin";
 	enemy->destructible = new MonsterDestructible(58, 5, "goblin corpse");
-	enemy->attacker = new Attacker(17);
+	enemy->attacker = new Attacker(13);
 	enemy->ai = new MonsterAi();
 }
 
@@ -136,7 +136,7 @@ void Enemy::setTroll(Actor* enemy) {
 	enemy->ch = 'T';
 	enemy->name = "troll";
 	enemy->destructible = new MonsterDestructible(83, 15, "troll carcass");
-	enemy->attacker = new Attacker(72);
+	enemy->attacker = new Attacker(42);
 	enemy->ai = new MonsterAi();
 }
 
@@ -144,7 +144,7 @@ void Enemy::setDragon(Actor* enemy) {
 	enemy->ch = 'D';
 	enemy->name = "dragon";
 	enemy->destructible = new MonsterDestructible(90, 15, "dragon corpse");
-	enemy->attacker = new Attacker(85);
+	enemy->attacker = new Attacker(55);
 	enemy->ai = new DragonAi();
 }
 
@@ -152,6 +152,6 @@ void Enemy::setCentaur(Actor* enemy) {
 	enemy->ch = 'C';
 	enemy->name = "centaur";
 	enemy->destructible = new MonsterDestructible(98, 16, "centaur carcass");
-	enemy->attacker = new Attacker(102);
+	enemy->attacker = new Attacker(62);
 	enemy->ai = new MonsterAi();
 }
