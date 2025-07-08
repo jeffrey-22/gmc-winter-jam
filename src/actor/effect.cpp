@@ -173,7 +173,7 @@ bool LiquifyEffect::applyTo(Actor* actor) {
 }
 
 bool SummonMonsterEffect::applyTo(Actor* actor) {
-	int nbMonsters = 5;
+	int nbMonsters = 3;
 	for (int i = 0; i < nbMonsters; i++) {
 		auto [x, y] = engine.map->findSpotsNear(actor->x, actor->y);
 		if (x != -1 || y != -1) {
