@@ -92,8 +92,7 @@ Menu* Pickable::tilePickCallback(Actor* owner, Actor* wearer, bool isCancelled, 
 	return NULL;
 }
 
-ScrollOfTeleportationPickable::ScrollOfTeleportationPickable() {
-	Pickable::Pickable();
+ScrollOfTeleportationPickable::ScrollOfTeleportationPickable() : Pickable() {
 	selector = new TargetSelector(TargetSelector::POSITION_FOR_SELF, 0.0);
 }
 
