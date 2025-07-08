@@ -107,6 +107,7 @@
     "fstream": "cpp",
     "cassert": "cpp",
     "cinttypes": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "queue": "cpp"
   }
 }

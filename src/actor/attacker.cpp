@@ -33,16 +33,17 @@ void Attacker::attack(Actor* owner, Actor* target) {
 	}
 }
 
-void Attacker::burn(Actor* owner, Actor* target) {
+void Attacker::burn(Actor* owner, Actor* target, float damageOverride) {
+	if (damageOverride == 0.0F) damageOverride = power;
 	if (target->destructible && !target->destructible->isDead()) {
 		engine.gui->message(
 			tcod::stringf(
 				"%s get%s burned for %g HP.",
 				target == engine.player ? "You" : target->name,
 				target == engine.player ? "" : "s",
-				power),
+				damageOverride),
 			target == engine.player ? RED : GOLD);
-		target->destructible->takeTrueDamage(target, power);
+		target->destructible->takeTrueDamage(target, damageOverride);
 	}
 }
 

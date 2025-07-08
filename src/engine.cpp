@@ -69,6 +69,7 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 
 	// Initialize other variables
 	fovRadius = 10;
+	monsterSpawnRate = 50;
 	gameStatus = STARTUP;
 	lastMouseTileX = lastMouseTileY = 0;
 
@@ -88,6 +89,15 @@ void Engine::render(tcod::Console& console) {
 
 	// Render Gui elements (on top, or modify the base console colors)
 	gui->render(console);
+
+	if (gameStatus == VICTORY) {
+		for (int x = 0; x < CONSOLE_WIDTH; x++)
+			for (int y = 0; y < CONSOLE_HEIGHT; y++) {
+				console.at({x, y}).bg.r = (uint8_t)std::min(winEffect + console.at({x, y}).bg.r, 255.0F);
+				console.at({x, y}).bg.g = (uint8_t)std::min(winEffect + console.at({x, y}).bg.g, 255.0F);
+				console.at({x, y}).bg.b = (uint8_t)std::min(winEffect + console.at({x, y}).bg.b, 255.0F);
+			}
+	}
 }
 
 // Called every frame, update actor turns if new turn, then render console graphics
@@ -110,6 +120,8 @@ SDL_AppResult Engine::iterate() {
 	} else if (gameStatus == MENU_UPDATE) {
 		// Status updated inside
 		gui->update();
+	} else if (gameStatus == VICTORY) {
+		winEffect += 0.2F;
 	}
 
 	// Render graphics for this frame
@@ -200,11 +212,26 @@ void Engine::createNatureActor() {
 
 void Engine::nextLevel() {
 	if (level == 20) {
-		gui->message("You found the exit and escaped!", LIGHT_BLUE);
+		gui->message("Congratulations!\nYou found the exit and escaped!", LIGHT_BLUE);
 		gameStatus = VICTORY;
+		winEffect = 0.0;
 		return;
 	}
 	level++;
+	if (level == 11)
+		monsterSpawnRate = 30;
+	else if (level >= 19)
+		monsterSpawnRate = 25;
+	if (level == 11)
+		fovRadius = 9;
+	else if (level == 12)
+		fovRadius = 8;
+	else if (level == 14)
+		fovRadius = 7;
+	else if (level == 17)
+		fovRadius = 6;
+	else if (level == 19)
+		fovRadius = 5;
 	gui->message("You descended deeper...", LIGHT_BLUE);
 	// Regenerate map
 	delete map;

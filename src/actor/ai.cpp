@@ -2,6 +2,8 @@
 
 #include "main.hpp"
 
+static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
+
 void PlayerAi::parseInput(
 	int& dx,
 	int& dy,
@@ -131,6 +133,7 @@ void PlayerAi::update(Actor* owner) {
 	} else if (isActionDescend) {
 		if (std::tie(owner->x, owner->y) == std::tie(engine.stairs->x, engine.stairs->y)) {
 			engine.nextLevel();
+			return;
 		} else {
 			engine.gui->message(
 				"There are no stairs here.\nDescend by pressing > while standing\ndirectly on top of stairs.");
@@ -185,36 +188,58 @@ void MonsterAi::update(Actor* owner) {
 	if (owner->destructible && owner->destructible->isDead()) {
 		return;
 	}
+	globalTurn++;
 	if (engine.map->isInFov(owner->x, owner->y)) {
 		// we can see the player. move towards him
-		moveCount = TRACKING_TURNS;
+		chasingTurn = CHASING_TURN;
+		wanderingTurn = 0;
 	} else {
-		moveCount--;
+		chasingTurn--;
+		chasingTurn = std::max(chasingTurn, 0);
 	}
-	if (moveCount > 0) {
-		moveOrAttack(owner, engine.player->x, engine.player->y);
+	if (chasingTurn > 0) {
+		auto [dx, dy] = engine.map->directionAtTarget(engine.player->x, engine.player->y, owner->x, owner->y);
+		moveOrAttack(owner, dx, dy);
+	} else {
+		wanderingTurn--;
+		if (wanderingTurn <= 0 || owner->getDistance(targetX, targetY) <= 3.0F) {
+			wanderingTurn = WANDERING_CHANGE_TARGET_TURN;
+			int tries = 10;
+			do {
+				tries--;
+				targetX = Random::instance().getInt(0, engine.MAP_WIDTH);
+				targetY = Random::instance().getInt(0, engine.MAP_HEIGHT);
+			} while ((owner->getDistance(targetX, targetY) <= 35.0F || !engine.map->canWalk(targetX, targetY)) &&
+					 tries > 0);
+			if ((owner->getDistance(targetX, targetY) <= 35.0F || !engine.map->canWalk(targetX, targetY))) {
+				int roomIndex = Random::instance().getInt(0, (int)(engine.map->roomRecords.size()) - 1);
+				targetX = Random::instance().getInt(
+					engine.map->roomRecords[roomIndex][0], engine.map->roomRecords[roomIndex][2]);
+				targetY = Random::instance().getInt(
+					engine.map->roomRecords[roomIndex][1], engine.map->roomRecords[roomIndex][3]);
+			}
+		}
+		if (globalTurn > 200) {
+			targetX = engine.player->x;
+			targetY = engine.player->y;
+		}
+		auto [dx, dy] = engine.map->directionAtTarget(targetX, targetY, owner->x, owner->y);
+		moveOrAttack(owner, dx, dy);
 	}
 }
 
-void MonsterAi::moveOrAttack(Actor* owner, int targetx, int targety) {
-	int dx = targetx - owner->x;
-	int dy = targety - owner->y;
-	int stepdx = (dx > 0 ? 1 : -1);
-	int stepdy = (dy > 0 ? 1 : -1);
-	float distance = sqrtf(1.0f * (dx * dx + dy * dy));
-	if (distance >= 2) {
-		dx = (int)(round(dx / distance));
-		dy = (int)(round(dy / distance));
-		if (engine.map->canWalk(owner->x + dx, owner->y + dy)) {
-			owner->x += dx;
-			owner->y += dy;
-		} else if (engine.map->canWalk(owner->x + stepdx, owner->y)) {
-			owner->x += stepdx;
-		} else if (engine.map->canWalk(owner->x, owner->y + stepdy)) {
-			owner->y += stepdy;
+void MonsterAi::moveOrAttack(Actor* owner, int dx, int dy) {
+	int cx = owner->x + dx;
+	int cy = owner->y + dy;
+	if (engine.player->x == cx && engine.player->y == cy) {
+		if (owner->attacker && engine.player->destructible && !engine.player->destructible->isDead()) {
+			owner->attacker->attack(owner, engine.player);
 		}
-	} else if (owner->attacker) {
-		owner->attacker->attack(owner, engine.player);
+		return;
+	}
+	if (engine.map->canWalk(cx, cy)) {
+		owner->x = cx;
+		owner->y = cy;
 	}
 }
 
@@ -347,7 +372,7 @@ void FireAi::update(Actor* owner) {
 	}
 }
 
-NatureAi::NatureAi(int level) : nbTurnsSinceCreation(nbTurnsSinceCreation), level(level) {}
+NatureAi::NatureAi(int level) : nbTurnsSinceCreation(0), level(level) {}
 
 void NatureAi::update(Actor* owner) {
 	Actor* fireActor = NULL;
@@ -377,4 +402,53 @@ void NatureAi::update(Actor* owner) {
 			engine.player->destructible->heal(1.0F);
 		}
 	}
+	// Monster spawning
+	if (nbTurnsSinceCreation % engine.monsterSpawnRate == engine.monsterSpawnRate - 1) {
+		engine.map->addOneNewMonster();
+	}
+}
+
+void GremlinAi::update(Actor* owner) {
+	if (Random::instance().getBool(0.25) && engine.map->isInFov(owner->x, owner->y) &&
+		engine.player->getDistance(owner->x, owner->y) <= 1.6F && engine.player && engine.player->destructible &&
+		!engine.player->destructible->isDead()) {
+		engine.gui->message("The gremlin grins at you.");
+	} else
+		MonsterAi::update(owner);
+}
+
+void ElfAi::update(Actor* owner) {
+	if (Random::instance().getBool(0.5)) {
+		Actor* healTarget = NULL;
+		for (auto actor : engine.actors)
+			if (actor != engine.player && actor != owner && actor->getDistance(owner->x, owner->y) <= 5.0F) {
+				healTarget = actor;
+				break;
+			}
+		if (healTarget != NULL) {
+			HealthEffect effect(30.0F, 0.0F, "The elf casts a healing spell!\n%s recovers %g HP.");
+			effect.applyTo(healTarget);
+		}
+	} else
+		MonsterAi::update(owner);
+}
+
+void LichAi::update(Actor* owner) {
+	if (Random::instance().getBool(0.5) && engine.map->isInFov(owner->x, owner->y) &&
+		engine.player->getDistance(owner->x, owner->y) <= 2.9F && engine.player && engine.player->destructible &&
+		!engine.player->destructible->isDead()) {
+		ConfusionEffect effect;
+		engine.gui->message("The Lich casts confusion magic at you!", RED);
+		effect.applyTo(engine.player);
+	} else
+		MonsterAi::update(owner);
+}
+
+void DragonAi::update(Actor* owner) {
+	if (Random::instance().getBool(0.05)) {
+		if (engine.player && engine.player->destructible && !engine.player->destructible->isDead())
+			engine.gui->message("The Dragon blows fire at you!", RED);
+		owner->attacker->burn(owner, engine.player, 30.0F);
+	} else
+		MonsterAi::update(owner);
 }

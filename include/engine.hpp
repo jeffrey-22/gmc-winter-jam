@@ -42,6 +42,8 @@ class Engine {
 	Actor* getClosestMonster(int x, int y, float range) const;
 
 	int level;
+	int monsterSpawnRate;
+	float winEffect;
 	void createNatureActor();
 	void nextLevel();
 

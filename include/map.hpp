@@ -24,8 +24,12 @@ class Map {
 
 	void dig(int x1, int y1, int x2, int y2);
 	void createRoom(bool first, int x1, int y1, int x2, int y2);
-	void addMonster(int x, int y);
-	void addItem(int x, int y);
+	void addMonsters();
+	void addOneNewMonster();
+	void addItems();
+
+	// calculate dx, dy for target at (x, y) from (cx, cy). dx, dy may be both 0.
+	std::array<int, 2> directionAtTarget(int x, int y, int cx, int cy);
 
 	bool isMapRevealed;
 	void revealMap();

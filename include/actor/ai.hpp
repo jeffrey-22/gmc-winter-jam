@@ -26,14 +26,12 @@ class PlayerAi : public Ai {
 
 class MonsterAi : public Ai {
    public:
-	void update(Actor* owner) override;
+	virtual void update(Actor* owner) override;
+	virtual void moveOrAttack(Actor* owner, int dx, int dy);
 
-   protected:
-	int moveCount;
-	// How many turns the monster chases the player after losing his sight
-	static const int TRACKING_TURNS = 3;
-
-	void moveOrAttack(Actor* owner, int targetx, int targety);
+	int wanderingTurn = 0, chasingTurn = 0, targetX = 0, targetY = 0, globalTurn = 0;
+	static const int CHASING_TURN = 3;
+	static const int WANDERING_CHANGE_TARGET_TURN = 25;
 };
 
 class TemporaryAi : public Ai {
@@ -71,5 +69,21 @@ class NatureAi : public Ai {
    public:
 	NatureAi(int level);
 	int nbTurnsSinceCreation, level;
+	void update(Actor* owner) override;
+};
+
+class GremlinAi : public MonsterAi {
+	void update(Actor* owner) override;
+};
+
+class ElfAi : public MonsterAi {
+	void update(Actor* owner) override;
+};
+
+class LichAi : public MonsterAi {
+	void update(Actor* owner) override;
+};
+
+class DragonAi : public MonsterAi {
 	void update(Actor* owner) override;
 };

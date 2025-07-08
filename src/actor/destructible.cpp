@@ -76,7 +76,7 @@ void MonsterDestructible::die(Actor* owner) {
 }
 
 void PlayerDestructible::die(Actor* owner) {
-	engine.gui->message(tcod::stringf("You died!", owner->name), RED);
+	engine.gui->message(tcod::stringf("You died!\nPlease exit and try again...", owner->name), RED);
 	Destructible::die(owner);
 	engine.gameStatus = Engine::DEFEAT;
 }
