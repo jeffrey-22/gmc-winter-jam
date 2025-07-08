@@ -9,14 +9,15 @@ static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
 static constexpr auto LIGHT_BLUE = tcod::ColorRGB{63, 63, 255};
 
 std::filesystem::path Engine::getDataDir() {
-	static auto root_directory = std::filesystem::path{"."};
-	while (!std::filesystem::exists(root_directory / "data")) {
-		root_directory /= "..";
-		if (!std::filesystem::exists(root_directory)) {
+	auto current = std::filesystem::current_path();
+	while (!std::filesystem::exists(current / "data")) {
+		auto parent = current.parent_path();
+		if (parent == current) {
 			throw std::runtime_error("Could not find the data directory.");
 		}
+		current = parent;
 	}
-	return root_directory / "data";
+	return current / "data";
 }
 
 // Configure param settings and initialize members
