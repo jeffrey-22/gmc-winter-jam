@@ -34,7 +34,7 @@ bool HealthEffect::applyTo(Actor* actor) {
 			return true;
 		} else {
 			float deltaDefense = 0.0F;
-			if (maxAmountOnFull >= 24.0F) deltaDefense = 2.0F;
+			if (maxAmountOnFull >= 24.0F) deltaDefense = 1.0F;
 			pointsHealed = actor->destructible->changeStats(maxAmountOnFull, deltaDefense);
 			engine.gui->message(
 				tcod::stringf(message, actor == engine.player ? "You" : actor->name, pointsHealed), LIGHT_GREY);

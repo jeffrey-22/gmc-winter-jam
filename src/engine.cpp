@@ -220,9 +220,9 @@ void Engine::nextLevel() {
 	}
 	level++;
 	if (level == 11)
-		monsterSpawnRate = 30;
+		monsterSpawnRate = 40;
 	else if (level >= 19)
-		monsterSpawnRate = 25;
+		monsterSpawnRate = 30;
 	if (level == 11)
 		fovRadius = 9;
 	else if (level == 12)

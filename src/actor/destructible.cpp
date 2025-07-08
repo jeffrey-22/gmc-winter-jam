@@ -59,6 +59,7 @@ float Destructible::heal(float amount) {
 float Destructible::changeStats(float deltaMaxHp, float deltaDefense) {
 	hp += deltaMaxHp;
 	maxHp += deltaMaxHp;
+	if (defense > 10.0F) deltaDefense = 0.0F;
 	defense += deltaDefense;
 	return deltaMaxHp;
 }

@@ -6,10 +6,12 @@
 static const int ROOM_MAX_SIZE = 12;
 static const int ROOM_MIN_SIZE = 4;
 
-static constexpr int MAX_ID_SCROLL_BY_FLOOR[20] = {4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static constexpr int MAX_ID_SCROLL_BY_FLOOR[20] = {7, 6, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static constexpr int MIN_TOTAL_ITEMS_BY_FLOOR[20] = {14, 12, 10, 7, 7, 5, 5, 5, 5, 4, 4, 4, 7, 4, 4, 7, 4, 4, 4, 4};
 static constexpr int MAX_TOTAL_ITEMS_BY_FLOOR[20] = {14, 12, 10, 9, 8, 7, 6, 6, 6, 6, 6, 6, 9, 6, 6, 9, 6, 6, 6, 6};
-static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4};
+static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3};
+static constexpr float EASY_LAYOUT_CHANCE_BY_FLOOR[20] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+														  0.1, 0.1, 0.7, 0.5, 0.5, 0.9, 0.5, 0.5, 0.8, 0.0};
 
 static auto constexpr LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 static auto constexpr VIOLET = tcod::ColorRGB{127, 0, 255};
@@ -46,7 +48,11 @@ class BspListener : public ITCODBspCallback {
 };
 
 // Create map with (width, height), so x < width and y < height. Players are already created
-Map::Map(int width, int height) : width(width), height(height), isMapRevealed(false) {
+Map::Map(int width, int height)
+	: width(width),
+	  height(height),
+	  isMapRevealed(false),
+	  isEasyLayout(Random::instance().getBool(EASY_LAYOUT_CHANCE_BY_FLOOR[engine.level - 1])) {
 	roomRecords.clear();
 	tiles = new Tile[width * height];
 	map = new TCODMap(width, height);
@@ -160,25 +166,41 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2) {
 	roomRecords.push_back({x1, y1, x2, y2});
 	if (first) {
 		// Put the player in the first room
-		engine.player->x = (x1 + x2) / 2;
-		engine.player->y = (y1 + y2) / 2;
+		engine.player->x = Random::instance().getInt(x1, x2);
+		engine.player->y = Random::instance().getInt(y1, y2);
+		engine.stairs->x = Random::instance().getInt(x1, x2);
+		engine.stairs->y = Random::instance().getInt(y1, y2);
 	}
 	Random& rng = Random::instance();
-	// Set stairs position as last room created
-	engine.stairs->x = (x1 + x2) / 2;
-	engine.stairs->y = (y1 + y2) / 2;
+	// Set stairs position as last room created with a chance
+	if (Random::instance().getBool(0.3F) && !isEasyLayout) {
+		engine.stairs->x = Random::instance().getInt(x1, x2);
+		engine.stairs->y = Random::instance().getInt(y1, y2);
+	}
 }
 
 void Map::addMonsters() {
 	Random& rng = Random::instance();
+	std::vector<std::pair<int, int>> positions = {};
 	for (auto [x1, y1, x2, y2] : roomRecords) {
 		for (int x = x1; x <= x2; x++)
-			for (int y = y1; y <= y2; y++)
-				if (rng.getBool(1.0F * ENEMY_DENSITY_BY_FLOOR[engine.level - 1] / 100) &&
-					engine.getActor(x, y) == NULL) {
-					Actor* enemy = Enemy::newEnemy(x, y);
-					Enemy::setRandomEnemyByFloor(enemy);
+			for (int y = y1; y <= y2; y++) {
+				if (engine.getActor(x, y) == NULL) {
+					positions.push_back({x, y});
 				}
+			}
+	}
+	int nbMonsters = 10;
+	if (ENEMY_DENSITY_BY_FLOOR[engine.level - 1] == 2)
+		nbMonsters = 20;
+	else if (ENEMY_DENSITY_BY_FLOOR[engine.level - 1] == 3)
+		nbMonsters = 30;
+	while (nbMonsters--) {
+		auto [x, y] = positions[Random::instance().getInt(0, (int)(positions.size()) - 1)];
+		if (engine.getActor(x, y) == NULL) {
+			Actor* enemy = Enemy::newEnemy(x, y);
+			Enemy::setRandomEnemyByFloor(enemy);
+		}
 	}
 }
 

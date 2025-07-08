@@ -50,6 +50,7 @@ void Attacker::burn(Actor* owner, Actor* target, float damageOverride) {
 void Attacker::changePower(Actor* owner, float deltaPower) {
 	if (owner->attacker && owner->destructible && !owner->destructible->isDead()) {
 		float originalPower = owner->attacker->power;
+		if (originalPower > 70.0F) deltaPower = 2.0F;
 		owner->attacker->power += deltaPower;
 		owner->attacker->power = std::max(owner->attacker->power, 1.0F);
 		float realChanged = owner->attacker->power - originalPower;

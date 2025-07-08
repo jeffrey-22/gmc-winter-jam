@@ -12,13 +12,13 @@ void Enemy::setRandomEnemyByFloor(Actor* enemy) {
 	std::vector<int> possibleEnemyIndices;
 	switch (engine.level) {
 		case 1:
+		case 2:
 			possibleEnemyIndices = {0};
 			break;
-		case 2:
 		case 3:
+		case 4:
 			possibleEnemyIndices = {0, 1};
 			break;
-		case 4:
 		case 5:
 		case 6:
 			possibleEnemyIndices = {0, 1, 2};

@@ -14,7 +14,7 @@ Actor* Item::newItem(int x, int y) {
 
 void Item::setRandomItem(Actor* item) {
 	int dice = Random::instance().getInt(0, 100);
-	if (dice <= 50) {
+	if (dice <= 40) {
 		setRandomPotion(item);
 	} else {
 		setRandomScroll(item);
@@ -22,15 +22,19 @@ void Item::setRandomItem(Actor* item) {
 }
 
 void Item::setRandomPotion(Actor* item) {
-	int potionIndex = Random::instance().getInt(0, 6);
+	int potionIndex = Random::instance().getInt(0, 10);
 	switch (potionIndex) {
 		case 0:
+		case 7:
+		case 8:
+		case 9:
 			setPotionOfFullHealing(item);
 			break;
 		case 1:
 			setPotionOfStrength(item);
 			break;
 		case 2:
+		case 10:
 			setPotionOfProtection(item);
 			break;
 		case 3:
@@ -49,24 +53,28 @@ void Item::setRandomPotion(Actor* item) {
 }
 
 void Item::setRandomScroll(Actor* item) {
-	int scrollIndex = Random::instance().getInt(0, 6);
+	int scrollIndex = Random::instance().getInt(0, 10);
 	switch (scrollIndex) {
 		case 0:
 			setScrollOfIdentify(item);
 			break;
 		case 1:
+		case 7:
+		case 9:
 			setScrollOfTeleportation(item);
 			break;
 		case 2:
 			setScrollOfMapping(item);
 			break;
 		case 3:
+		case 10:
 			setScrollOfConfusion(item);
 			break;
 		case 4:
 			setScrollOfFireball(item);
 			break;
 		case 5:
+		case 8:
 			setScrollOfLiquify(item);
 			break;
 		case 6:

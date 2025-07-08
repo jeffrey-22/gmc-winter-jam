@@ -108,6 +108,14 @@
     "cassert": "cpp",
     "cinttypes": "cpp",
     "set": "cpp",
-    "queue": "cpp"
+    "queue": "cpp",
+    "any": "cpp",
+    "complex": "cpp",
+    "execution": "cpp",
+    "memory_resource": "cpp",
+    "source_location": "cpp",
+    "typeindex": "cpp",
+    "variant": "cpp",
+    "stdfloat": "cpp"
   }
 }

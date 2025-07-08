@@ -31,7 +31,7 @@ class Map {
 	// calculate dx, dy for target at (x, y) from (cx, cy). dx, dy may be both 0.
 	std::array<int, 2> directionAtTarget(int x, int y, int cx, int cy);
 
-	bool isMapRevealed;
+	bool isMapRevealed, isEasyLayout;
 	void revealMap();
 	void cancelRevealMap();
 

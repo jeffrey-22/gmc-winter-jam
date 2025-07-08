@@ -408,10 +408,15 @@ void NatureAi::update(Actor* owner) {
 	// Monster spawning
 	if (nbTurnsSinceCreation % engine.monsterSpawnRate == engine.monsterSpawnRate - 1) {
 		engine.map->addOneNewMonster();
+		if (nbTurnsSinceCreation % 7 == 0) engine.monsterSpawnRate--;
+		engine.monsterSpawnRate = std::max(10, engine.monsterSpawnRate);
 	}
 }
 
 void GremlinAi::update(Actor* owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
 	if (Random::instance().getBool(0.25) && engine.map->isInFov(owner->x, owner->y) &&
 		engine.player->getDistance(owner->x, owner->y) <= 1.6F && engine.player && engine.player->destructible &&
 		!engine.player->destructible->isDead()) {
@@ -421,10 +426,15 @@ void GremlinAi::update(Actor* owner) {
 }
 
 void ElfAi::update(Actor* owner) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
 	if (Random::instance().getBool(0.5)) {
 		Actor* healTarget = NULL;
 		for (auto actor : engine.actors)
-			if (actor != engine.player && actor != owner && actor->getDistance(owner->x, owner->y) <= 5.0F) {
+			if (actor != engine.player && actor != owner && actor->getDistance(owner->x, owner->y) <= 5.0F &&
+				actor->destructible && !actor->destructible->isDead() &&
+				actor->destructible->hp < actor->destructible->maxHp) {
 				healTarget = actor;
 				break;
 			}
@@ -437,7 +447,10 @@ void ElfAi::update(Actor* owner) {
 }
 
 void LichAi::update(Actor* owner) {
-	if (Random::instance().getBool(0.5) && engine.map->isInFov(owner->x, owner->y) &&
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (Random::instance().getBool(0.1) && engine.map->isInFov(owner->x, owner->y) &&
 		engine.player->getDistance(owner->x, owner->y) <= 2.9F && engine.player && engine.player->destructible &&
 		!engine.player->destructible->isDead()) {
 		ConfusionEffect effect;
@@ -448,7 +461,10 @@ void LichAi::update(Actor* owner) {
 }
 
 void DragonAi::update(Actor* owner) {
-	if (Random::instance().getBool(0.05)) {
+	if (owner->destructible && owner->destructible->isDead()) {
+		return;
+	}
+	if (Random::instance().getBool(0.01)) {
 		if (engine.player && engine.player->destructible && !engine.player->destructible->isDead())
 			engine.gui->message("The Dragon blows fire at you!", RED);
 		owner->attacker->burn(owner, engine.player, 20.0F);
