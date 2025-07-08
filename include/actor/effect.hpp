@@ -66,3 +66,33 @@ class PutOutFireEffect : public Effect {
 	PutOutFireEffect() = default;
 	bool applyTo(Actor* actor) override;
 };
+
+class IdentifyEffect : public Effect {
+   public:
+	IdentifyEffect() = default;
+	bool applyTo(Actor* actor) override;
+};
+
+class ConfusionEffect : public Effect {
+   public:
+	ConfusionEffect() = default;
+	bool applyTo(Actor* actor) override;
+};
+
+class MappingEffect : public Effect {
+   public:
+	MappingEffect() = default;
+	bool applyTo(Actor* actor) override;
+};
+
+class LiquifyEffect : public Effect {
+   public:
+	LiquifyEffect() = default;
+	bool applyTo(Actor* actor) override;
+};
+
+class SummonMonsterEffect : public Effect {
+   public:
+	SummonMonsterEffect() = default;
+	bool applyTo(Actor* actor) override;
+};

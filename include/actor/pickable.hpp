@@ -36,7 +36,19 @@ class Pickable {
 	*/
 	virtual void applyEffects(Actor* owner, Actor* wearer, bool isCancelled, std::vector<Actor*> targets);
 
+	// Likely not needed, only used for POSITION_FOR_SELF
+	virtual Menu* tilePickCallback(
+		Actor* owner, Actor* wearer, bool isCancelled, int x, int y, Menu* callbackMenu = NULL);
+
    protected:
 	TargetSelector* selector;
 	Effect* effect;
+};
+
+class ScrollOfTeleportationPickable : public Pickable {
+   public:
+	ScrollOfTeleportationPickable();
+
+	virtual Menu* tilePickCallback(
+		Actor* owner, Actor* wearer, bool isCancelled, int x, int y, Menu* callbackMenu = NULL) override;
 };

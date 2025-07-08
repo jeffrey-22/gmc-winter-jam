@@ -161,11 +161,12 @@ bool PlayerAi::moveOrAttack(Actor* owner, int targetx, int targety) {
 			engine.gui->message(tcod::stringf("There's a %s here\n", actor->name));
 		} else if (actor->pickable) {
 			if (actor->pickable->pick(actor, owner)) {
-				engine.gui->message(tcod::stringf("You picked up %s.", engine.nameTracker->getDisplayName(actor)));
+				engine.gui->message(tcod::stringf("You picked up the %s.", engine.nameTracker->getDisplayName(actor)));
 			} else {
 				engine.gui->message(
 					tcod::stringf(
-						"Your inventory is full, so you walked over\n%s.", engine.nameTracker->getDisplayName(actor)));
+						"Your inventory is full, so you walked over\nthe %s.",
+						engine.nameTracker->getDisplayName(actor)));
 			}
 		}
 	}
@@ -242,7 +243,7 @@ void TemporaryAi::applyTo(Actor* actor) {
 ConfusedMonsterAi::ConfusedMonsterAi(int nbTurns) : TemporaryAi(nbTurns) {}
 
 void ConfusedMonsterAi::update(Actor* owner) {
-	Random rng = Random::instance();
+	Random& rng = Random::instance();
 	int dx = rng.getInt(-1, 1);
 	int dy = rng.getInt(-1, 1);
 	if (dx != 0 || dy != 0) {

@@ -3,6 +3,7 @@
 static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
 static constexpr auto GOLD = tcod::ColorRGB{229, 191, 0};
 static constexpr auto LIGHT_GREY = tcod::ColorRGB{159, 159, 159};
+static constexpr auto LIGHT_BLUE = tcod::ColorRGB{63, 63, 255};
 
 SequentialEffect::SequentialEffect(Effect* firstEffect, Effect* secondEffect) {
 	memberEffects.clear();
@@ -128,5 +129,55 @@ bool PutOutFireEffect::applyTo(Actor* actor) {
 		engine.removeActor(fireActor);
 		if (success) engine.gui->message("You put out the fire with the liquid in the potion.");
 	}
+	return true;
+}
+
+bool IdentifyEffect::applyTo(Actor* actor) {
+	engine.nameTracker->identifyItem(actor);
+	return true;
+}
+
+bool ConfusionEffect::applyTo(Actor* actor) {
+	if (actor == engine.player) {
+		engine.gui->message("You feel dizzy...", RED);
+		ConfusedPlayerAi* newAi = new ConfusedPlayerAi(12);
+		if (typeid(*(actor->ai)).name() == typeid(*(newAi)).name()) {
+			return true;
+		}
+		newAi->applyTo(actor);
+		return true;
+	} else if (actor->destructible && !actor->destructible->isDead()) {
+		engine.gui->message(tcod::stringf("%s appears dizzy...", actor->name), LIGHT_GREY);
+		ConfusedMonsterAi* newAi = new ConfusedMonsterAi(12);
+		if (typeid(*(actor->ai)).name() == typeid(*(newAi)).name()) {
+			return true;
+		}
+		newAi->applyTo(actor);
+		return true;
+	}
+	return true;
+}
+
+bool MappingEffect::applyTo(Actor* actor) {
+	engine.map->revealMap();
+	engine.gui->message("You suddenly receive a vision of the floor!", LIGHT_BLUE);
+	return true;
+}
+
+bool LiquifyEffect::applyTo(Actor* actor) {
+	if (actor->pickable) {
+		Item::setRandomPotion(actor);
+		engine.gui->message("The item becomes a potion!");
+	}
+	return true;
+}
+
+bool SummonMonsterEffect::applyTo(Actor* actor) {
+	int nbMonsters = 5;
+	for (int i = 0; i < nbMonsters; i++) {
+		auto [x, y] = engine.map->findSpotsNear(actor->x, actor->y);
+		if (x != -1 || y != -1) engine.map->addMonster(x, y);
+	}
+	engine.gui->message("Monster party!");
 	return true;
 }

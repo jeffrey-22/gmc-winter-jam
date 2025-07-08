@@ -18,17 +18,25 @@ class Map {
 	void setWalkable(int x, int y, bool newWalkableValue = true);
 	bool isInFov(int x, int y) const;
 	bool isExplored(int x, int y) const;
+	std::array<int, 2> findSpotsNear(int x, int y);
 	void computeFov();
 	void render(tcod::Console& console) const;
+
+	void dig(int x1, int y1, int x2, int y2);
+	void createRoom(bool first, int x1, int y1, int x2, int y2);
+	void addMonster(int x, int y);
+	void addItem(int x, int y);
+
+	bool isMapRevealed;
+	void revealMap();
+	void cancelRevealMap();
+
+	// x1, y1, x2, y2
+	std::vector<std::array<int, 4>> roomRecords;
 
    protected:
 	// Tile at (x, y) is indexed at x + y * width
 	Tile* tiles;
 	TCODMap* map;
 	friend class BspListener;
-
-	void dig(int x1, int y1, int x2, int y2);
-	void createRoom(bool first, int x1, int y1, int x2, int y2);
-	void addMonster(int x, int y);
-	void addItem(int x, int y);
 };

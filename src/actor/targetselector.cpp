@@ -54,6 +54,44 @@ Menu* TargetSelector::selectTargets(Actor* owner, Actor* wearer, Menu* inventory
 			engine.gui->message("Pick an item from inventory to use on.", CYAN);
 			return new ItemPickMenu(this, owner, wearer, true);
 		} break;
+		case ROOM_OR_AROUND: {
+			// room or around, excluding wearer
+			int x1, y1, x2, y2, cx, cy;
+			cx = wearer->x, cy = wearer->y;
+			bool foundRoom = false;
+			for (auto [roomx1, roomy1, roomx2, roomy2] : engine.map->roomRecords) {
+				if (roomx1 <= cx && cx <= roomx2 && roomy1 <= cy && cy <= roomy2) {
+					foundRoom = true;
+					x1 = roomx1;
+					y1 = roomy1;
+					x2 = roomx2;
+					y2 = roomy2;
+					break;
+				}
+			}
+			if (!foundRoom) {
+				x1 = cx - 1;
+				y1 = cy - 1;
+				x2 = cx + 1;
+				y2 = cy + 1;
+			} else {
+				x1--;
+				y1--;
+				x2++;
+				y2++;
+			}
+			for (auto actor : engine.actors)
+				if (actor != wearer && actor->destructible && !actor->destructible->isDead() &&
+					(x1 <= actor->x && actor->x <= x2 && y1 <= actor->y && actor->y <= y2)) {
+					list.push_back(actor);
+				}
+			if (list.empty()) engine.gui->message("No enemies nearby.", LIGHT_GREY);
+			owner->pickable->applyEffects(owner, wearer, false, list);
+		} break;
+		case POSITION_FOR_SELF: {
+			engine.gui->message("Pick a position that you can see.", CYAN);
+			return new TilePickMenu(this, owner, wearer, true, TilePickMenu::IN_LINE_OF_SIGHT);
+		} break;
 	}
 	return NULL;
 }
@@ -84,6 +122,9 @@ Menu* TargetSelector::tilePickCallback(
 			if (list.empty()) engine.gui->message("No enemies close enough to the selected center.", LIGHT_GREY);
 			owner->pickable->applyEffects(owner, wearer, false, list);
 			return NULL;
+		} break;
+		case POSITION_FOR_SELF: {
+			return owner->pickable->tilePickCallback(owner, wearer, isCancelled, x, y, callbackMenu);
 		} break;
 	}
 	return NULL;

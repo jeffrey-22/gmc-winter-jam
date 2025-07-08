@@ -22,6 +22,16 @@ NameTracker::NameTracker(Random* rng) : rng(rng) {
 	descriptions["Potion of Fire"] =
 		"\nSets the user on fire, which burns for 5HP per turn\nand lasts for 20 turns.\nDrinking any other potion "
 		"cures burning.\n";
+
+	descriptions["Scroll of Identify"] = "\nIdentify the selected item.\n";
+	descriptions["Scroll of Teleportation"] = "\nTeleport the reader to a location in their sight.\n";
+	descriptions["Scroll of Mapping"] = "\nReveal the floor map as well as locations of monsters and items.\n";
+	descriptions["Scroll of Confusion"] = "\nConfuse all monsters in the same room or 1 tile around you.\n";
+	descriptions["Scroll of Fireball"] =
+		"\nIgnite anyone within a 3x3 impact range at the desired location.\nBurning deals 5HP per turn and lasts 20 "
+		"turns.\n";
+	descriptions["Scroll of Liquify"] = "\nChange a selected item into a random potion.\n";
+	descriptions["Scroll of Summon Monsters"] = "\nSummon monsters around the reader's location.\n";
 }
 
 void NameTracker::initDefaultNames() {
@@ -35,9 +45,13 @@ void NameTracker::initDefaultNames() {
 	defaultNames['!']["Potion of Confusion"] = "Glowing Potion";
 	defaultNames['!']["Potion of Fire"] = "Unstable Potion";
 
-	defaultNames['?']["scroll of lightning bolt"] = "? green scroll";
-	defaultNames['?']["scroll of confusion"] = "? yellow scroll";
-	defaultNames['?']["scroll of fireball"] = "? red scroll";
+	defaultNames['?']["Scroll of Identify"] = "Azure Scroll";
+	defaultNames['?']["Scroll of Teleportation"] = "Crimson Scroll";
+	defaultNames['?']["Scroll of Mapping"] = "Verdant Scroll";
+	defaultNames['?']["Scroll of Confusion"] = "Saffron Scroll";
+	defaultNames['?']["Scroll of Fireball"] = "Violet Scroll";
+	defaultNames['?']["Scroll of Liquify"] = "Ebon Scroll";
+	defaultNames['?']["Scroll of Summon Monsters"] = "Ivory Scroll";
 
 	// Randomly shuffle names
 	for (auto [typeCh, typeDefaultNames] : defaultNames) {

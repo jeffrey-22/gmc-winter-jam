@@ -4,13 +4,16 @@
 
 class TargetSelector {
    public:
+	// POSITION_FOR_SELF: special, calls pickable's tilePickCallBack instead
 	enum SelectorType {
 		CLOSEST_MONSTER,
 		SELECTED_MONSTER,
 		WEARER_RANGE,
 		SELECTED_RANGE,
 		WEARER_HIMSELF,
-		OTHER_ITEM_FROM_INVENTORY
+		OTHER_ITEM_FROM_INVENTORY,
+		ROOM_OR_AROUND,
+		POSITION_FOR_SELF
 	};
 	TargetSelector(SelectorType type, float range);
 

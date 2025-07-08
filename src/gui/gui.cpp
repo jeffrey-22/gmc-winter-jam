@@ -136,7 +136,9 @@ void Gui::renderMouseLook() {
 		// Find actors under the mouse cursor
 		bool corpseOrEnemyOrItem = (actor->destructible && actor->destructible->isDead()) || actor->pickable ||
 								   (actor->destructible && !actor->destructible->isDead() && actor != engine.player);
-		if (corpseOrEnemyOrItem && actor->x == cx && actor->y == cy) {
+		if (corpseOrEnemyOrItem && actor->x == cx && actor->y == cy &&
+			((!actor->fovOnly && engine.map->isExplored(actor->x, actor->y)) ||
+			 engine.map->isInFov(actor->x, actor->y) || engine.map->isMapRevealed)) {
 			if (!first) {
 				allNames += ", ";
 			} else {

@@ -82,7 +82,8 @@ void Engine::render(tcod::Console& console) {
 
 	// Render actors if in FoV
 	for (auto actor : actors)
-		if ((!actor->fovOnly && map->isExplored(actor->x, actor->y)) || map->isInFov(actor->x, actor->y))
+		if ((!actor->fovOnly && map->isExplored(actor->x, actor->y)) || map->isInFov(actor->x, actor->y) ||
+			map->isMapRevealed)
 			actor->render(console);
 
 	// Render Gui elements (on top, or modify the base console colors)

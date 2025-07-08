@@ -4,13 +4,25 @@
 
 class Item {
    public:
-	static void addPotionOfFullHealing(int x, int y);
-	static void addPotionOfStrength(int x, int y);
-	static void addPotionOfProtection(int x, int y);
-	static void addPotionOfPoison(int x, int y);
-	static void addPotionOfAmnesia(int x, int y);
-	static void addPotionOfConfusion(int x, int y);
-	static void addPotionOfFire(int x, int y);
+	static Actor* newItem(int x, int y);
 
-	static void addScrollOfIdentify(int x, int y);
+	static void setRandomItem(Actor* item);
+	static void setRandomPotion(Actor* item);
+	static void setRandomScroll(Actor* item);
+
+	static void setPotionOfFullHealing(Actor* item);
+	static void setPotionOfStrength(Actor* item);
+	static void setPotionOfProtection(Actor* item);
+	static void setPotionOfPoison(Actor* item);
+	static void setPotionOfAmnesia(Actor* item);
+	static void setPotionOfConfusion(Actor* item);
+	static void setPotionOfFire(Actor* item);
+
+	static void setScrollOfIdentify(Actor* item);
+	static void setScrollOfTeleportation(Actor* item);
+	static void setScrollOfMapping(Actor* item);
+	static void setScrollOfConfusion(Actor* item);
+	static void setScrollOfFireball(Actor* item);
+	static void setScrollOfLiquify(Actor* item);
+	static void setScrollOfSummonMonsters(Actor* item);
 };

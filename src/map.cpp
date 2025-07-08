@@ -49,7 +49,8 @@ class BspListener : public ITCODBspCallback {
 };
 
 // Create map with (width, height), so x < width and y < height. Players are already created
-Map::Map(int width, int height) : width(width), height(height) {
+Map::Map(int width, int height) : width(width), height(height), isMapRevealed(false) {
+	roomRecords.clear();
 	tiles = new Tile[width * height];
 	map = new TCODMap(width, height);
 	// TODO: Create rooms randomly
@@ -84,6 +85,28 @@ void Map::setWalkable(int x, int y, bool newWalkableValue) {
 // Has the tile been explored by the player before
 bool Map::isExplored(int x, int y) const { return tiles[x + y * width].explored; }
 
+// Find spots near (x, y) that are empty and not blocked. If none find, {-1, -1} is returned
+std::array<int, 2> Map::findSpotsNear(int x, int y) {
+	std::vector<std::pair<std::pair<int, int>, std::array<int, 2>>> candidates = {};
+	Random& rng = Random::instance();
+	for (int dx = -3; dx <= 3; dx++)
+		for (int dy = -3; dy <= 3; dy++) {
+			int cx = x + dx, cy = y + dy;
+			bool hasBlocker = false;
+			for (auto actor : engine.actors)
+				if (actor->x == cx && actor->y == cy && actor->blocks) {
+					hasBlocker = true;
+					break;
+				}
+			if (map->isWalkable(cx, cy) && !hasBlocker) {
+				candidates.push_back({{(cx - x) * (cx - x) + (cy - y) * (cy - y), rng.getInt(0, 10000)}, {cx, cy}});
+			}
+		}
+	if (candidates.empty()) return {-1, -1};
+	std::sort(candidates.begin(), candidates.end());
+	return candidates[0].second;
+}
+
 // Is the tile in FoV, but computeFov() must be called first
 bool Map::isInFov(int x, int y) const {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
@@ -110,7 +133,7 @@ void Map::render(tcod::Console& console) const {
 			if (console.in_bounds({x, y})) {
 				if (isInFov(x, y)) {
 					console[{x, y}].bg = isWalkable(x, y) ? lightGround : lightWall;
-				} else if (isExplored(x, y)) {
+				} else if (isExplored(x, y) || isMapRevealed) {
 					console[{x, y}].bg = isWalkable(x, y) ? darkGround : darkWall;
 				}
 			}
@@ -134,12 +157,13 @@ void Map::dig(int x1, int y1, int x2, int y2) {
 // Create a rectangular room, and if first room the player position is set to be there
 void Map::createRoom(bool first, int x1, int y1, int x2, int y2) {
 	dig(x1, y1, x2, y2);
+	roomRecords.push_back({x1, y1, x2, y2});
 	if (first) {
 		// Put the player in the first room
 		engine.player->x = (x1 + x2) / 2;
 		engine.player->y = (y1 + y2) / 2;
 	}
-	Random rng = Random::instance();
+	Random& rng = Random::instance();
 	// Add monsters
 	int nbMonsters = rng.getInt(0, MAX_ROOM_MONSTERS);
 	while (nbMonsters > 0) {
@@ -167,7 +191,7 @@ void Map::createRoom(bool first, int x1, int y1, int x2, int y2) {
 
 // Add a monster
 void Map::addMonster(int x, int y) {
-	Random rng = Random::instance();
+	Random& rng = Random::instance();
 	if (rng.getInt(0, 100) < 80) {
 		// create an orc
 		Actor* orc = new Actor(x, y, 'o', "orc", tcod::ColorRGB{63, 127, 63});
@@ -186,13 +210,14 @@ void Map::addMonster(int x, int y) {
 }
 
 void Map::addItem(int x, int y) {
-	Random rng = Random::instance();
+	Random& rng = Random::instance();
 	int dice = rng.getInt(0, 100);
-
-	if (dice < 50) {
-		Item::addPotionOfFire(x, y);
+	if (dice < 20) {
+		Actor* item = Item::newItem(x, y);
+		Item::setRandomItem(item);
 	} else {
-		Item::addPotionOfProtection(x, y);
+		Actor* item = Item::newItem(x, y);
+		Item::setScrollOfMapping(item);
 	}
 	/*
 	else if (dice < 20 + 20) {
@@ -232,3 +257,7 @@ void Map::addItem(int x, int y) {
 	}
 	*/
 }
+
+void Map::revealMap() { isMapRevealed = true; }
+
+void Map::cancelRevealMap() { isMapRevealed = false; }

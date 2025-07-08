@@ -394,7 +394,8 @@ void TilePickMenu::update() {
 	if (engine.lastEventType == SDL_EVENT_MOUSE_BUTTON_DOWN) {
 		if (engine.lastMouseButton == SDL_BUTTON_LEFT) {
 			int x = engine.lastMouseTileX, y = engine.lastMouseTileY;
-			if (engine.map->isInFov(x, y) && (maxRange == 0 || engine.player->getDistance(x, y) <= maxRange)) {
+			if (engine.map->isInFov(x, y) && (maxRange == 0 || wearer->getDistance(x, y) <= maxRange) &&
+				engine.map->isWalkable(x, y)) {
 				Menu* nextMenu = invoker->tilePickCallback(owner, wearer, false, x, y, this);
 				if (nextMenu == NULL) {
 					// Turn spent successfully
@@ -423,20 +424,19 @@ void TilePickMenu::render(tcod::Console& mainConsole) {
 	Map* map = engine.map;
 	for (int cx = 0; cx < map->width; cx++) {
 		for (int cy = 0; cy < map->height; cy++) {
-			if (engine.map->isInFov(cx, cy) && (maxRange == 0 || owner->getDistance(cx, cy) <= maxRange) &&
+			if (engine.map->isInFov(cx, cy) && (maxRange == 0 || wearer->getDistance(cx, cy) <= maxRange) &&
 				engine.map->isWalkable(cx, cy)) {
 				TCOD_ColorRGBA col = mainConsole.at({cx, cy}).bg;
 
 				// Highlight selectable tiles by greenifying
 				float p = 0.5f;
-				if (engine.lastMouseTileX == cx && engine.lastMouseTileY == cy) p = 0.8f;
 				TCOD_ColorRGBA hiCol = {120, 255, 120};
+				if (engine.lastMouseTileX == cx && engine.lastMouseTileY == cy) hiCol = {120, 120, 255};
 				col = {
 					static_cast<uint8_t>(col.r * p + hiCol.r * (1 - p)),
 					static_cast<uint8_t>(col.g * p + hiCol.g * (1 - p)),
 					static_cast<uint8_t>(col.b * p + hiCol.b * (1 - p)),
 					col.a};
-
 				mainConsole.at({cx, cy}).bg = col;
 			}
 		}

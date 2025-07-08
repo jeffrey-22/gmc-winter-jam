@@ -67,11 +67,12 @@ Menu* Pickable::use(Actor* owner, Actor* wearer, Menu* inventoryMenu) {
 	return selector->selectTargets(owner, wearer, inventoryMenu);
 }
 
+// Apply effect, then delete item if successful
 void Pickable::applyEffects(Actor* owner, Actor* wearer, bool isCancelled, std::vector<Actor*> targets) {
 	if (isCancelled) {
 		return;
 	}
-	bool succeed = false;
+	bool succeed = true;
 	for (auto actor : targets) {
 		if (effect->applyTo(actor)) {
 			succeed = true;
@@ -84,4 +85,32 @@ void Pickable::applyEffects(Actor* owner, Actor* wearer, bool isCancelled, std::
 			delete owner;
 		}
 	}
+}
+
+Menu* Pickable::tilePickCallback(Actor* owner, Actor* wearer, bool isCancelled, int x, int y, Menu* callbackMenu) {
+	std::runtime_error("Tile pick call back not implemented!");
+	return NULL;
+}
+
+ScrollOfTeleportationPickable::ScrollOfTeleportationPickable() {
+	Pickable::Pickable();
+	selector = new TargetSelector(TargetSelector::POSITION_FOR_SELF, 0.0);
+}
+
+Menu* ScrollOfTeleportationPickable::tilePickCallback(
+	Actor* owner, Actor* wearer, bool isCancelled, int x, int y, Menu* callbackMenu) {
+	auto [cx, cy] = engine.map->findSpotsNear(x, y);
+	if (cx != -1 && cy != -1) {
+		wearer->x = cx;
+		wearer->y = cy;
+		if (wearer == engine.player) engine.map->computeFov();
+		engine.gui->message("You teleported!", LIGHT_GREEN);
+	} else {
+		engine.gui->message("You failed to teleport...", LIGHT_GREEN);
+	}
+	if (wearer->container) {
+		wearer->container->remove(owner);
+		delete owner;
+	}
+	return NULL;
 }

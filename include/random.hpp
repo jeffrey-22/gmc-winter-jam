@@ -16,6 +16,10 @@ class Random {
 	void resetSeed();
 	std::mt19937 rng;
 
+	// Disable copying and assignment
+	Random(const Random&) = delete;
+	Random& operator=(const Random&) = delete;
+
    private:
 	static unsigned getSystemClock();
 };

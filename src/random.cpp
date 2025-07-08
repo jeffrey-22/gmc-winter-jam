@@ -5,11 +5,16 @@
 
 // Singleton instance access
 Random& Random::instance() {
-	static Random random;
+	static Random random = Random();
 	return random;
 }
 
-unsigned Random::getSystemClock() { return std::chrono::system_clock::now().time_since_epoch().count(); }
+unsigned Random::getSystemClock() {
+	auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	std::random_device rd;
+	uint64_t rdSeed = rd();
+	return static_cast<unsigned>(now ^ rdSeed);
+}
 
 Random::Random() : rng(std::mt19937(getSystemClock())) {}
 
