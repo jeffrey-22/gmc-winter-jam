@@ -69,11 +69,11 @@ Map::~Map() {
 // Is tile walkable
 bool Map::isWalkable(int x, int y) const { return map->isWalkable(x, y); }
 
-// Is both tile walkable and no actors are present
+// Is both tile walkable and no blocking actors are present
 bool Map::canWalk(int x, int y) const {
 	if (!isWalkable(x, y)) return false;
 	for (auto actor : engine.actors)
-		if (actor->x == x && actor->y == y) return false;
+		if (actor->x == x && actor->y == y && actor->blocks) return false;
 	return true;
 }
 
