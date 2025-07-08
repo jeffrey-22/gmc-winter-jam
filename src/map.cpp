@@ -9,7 +9,7 @@ static const int ROOM_MIN_SIZE = 4;
 static constexpr int MAX_ID_SCROLL_BY_FLOOR[20] = {4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static constexpr int MIN_TOTAL_ITEMS_BY_FLOOR[20] = {14, 12, 10, 7, 7, 5, 5, 5, 5, 4, 4, 4, 7, 4, 4, 7, 4, 4, 4, 4};
 static constexpr int MAX_TOTAL_ITEMS_BY_FLOOR[20] = {14, 12, 10, 9, 8, 7, 6, 6, 6, 6, 6, 6, 9, 6, 6, 9, 6, 6, 6, 6};
-static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 2, 3, 4, 4, 4, 4, 4, 4, 6, 7, 7, 7, 7, 7, 8, 10, 10, 10};
+static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4};
 
 static auto constexpr LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 static auto constexpr VIOLET = tcod::ColorRGB{127, 0, 255};
