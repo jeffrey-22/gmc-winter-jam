@@ -86,6 +86,7 @@ Menu* TargetSelector::tilePickCallback(
 			return NULL;
 		} break;
 	}
+	return NULL;
 }
 
 Menu* TargetSelector::actorPickCallback(
@@ -103,4 +104,5 @@ Menu* TargetSelector::actorPickCallback(
 			return NULL;
 		} break;
 	}
+	return NULL;
 }

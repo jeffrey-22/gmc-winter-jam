@@ -14,6 +14,7 @@ class Menu;
 class NameTracker;
 class Effect;
 class TargetSelector;
+class Item;
 #include "actor/actor.hpp"
 #include "actor/ai.hpp"
 #include "actor/attacker.hpp"
@@ -26,5 +27,6 @@ class TargetSelector;
 #include "gui/gui.hpp"
 #include "gui/menu.hpp"
 #include "gui/nametracker.hpp"
+#include "item.hpp"
 #include "map.hpp"
 #include "random.hpp"

@@ -10,9 +10,12 @@ class NameTracker {
 	NameTracker(Random* rng);
 	~NameTracker();
 
+	void initDefaultNames();
+
 	void callItem(Actor* itemActor, std::string callName);
 
 	void identifyItem(Actor* itemActor);
+	void forgetEverything();
 
 	const char* getDisplayName(const Actor* itemActor);
 

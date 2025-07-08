@@ -14,6 +14,7 @@ class Destructible {
 
 	inline bool isDead() { return hp <= 0; }
 	float takeDamage(Actor* owner, float damage);
+	float takeTrueDamage(Actor* owner, float trueDamage);
 	virtual void die(Actor* owner);
 	float heal(float amount);
 	float changeStats(float deltaMaxHp, float deltaDefense);

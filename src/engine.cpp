@@ -1,6 +1,5 @@
 #include <cassert>
 #include <filesystem>
-#include <iostream>
 #include <string>
 
 #include "main.hpp"
@@ -44,10 +43,12 @@ SDL_AppResult Engine::init(int argc, char** argv) {
 	// Create actors
 	player = new Actor(console.get_width() / 2, console.get_height() / 2, '@', "player", {200, 210, 220});
 	player->destructible = new PlayerDestructible(50, 2, "your cadaver");
-	player->attacker = new Attacker(5);
+	player->attacker = new Attacker(35);
 	player->ai = new PlayerAi();
 	player->container = new Container(36);
 	actors.push_back(player);
+
+	createNatureActor();
 
 	level = 1;
 	stairs = new Actor(0, 0, '>', "stairs", WHITE);
@@ -190,6 +191,12 @@ Actor* Engine::getClosestMonster(int x, int y, float range) const {
 	return closest;
 }
 
+void Engine::createNatureActor() {
+	nature = new Actor(-1, -1, ' ', "Nature", RED);
+	nature->ai = new NatureAi(level);
+	actors.push_back(nature);
+}
+
 void Engine::nextLevel() {
 	if (level == 20) {
 		gui->message("You found the exit and escaped!", LIGHT_BLUE);
@@ -208,6 +215,7 @@ void Engine::nextLevel() {
 	// Create a new map
 	map = new Map(MAP_WIDTH, MAP_HEIGHT);
 	sendToBack(stairs);
+	createNatureActor();
 	map->computeFov();
 	gameStatus = IDLE;
 }

@@ -42,6 +42,7 @@ class Engine {
 	Actor* getClosestMonster(int x, int y, float range) const;
 
 	int level;
+	void createNatureActor();
 	void nextLevel();
 
 	// List of actors that will be rendered and updated each frame or turn, including player, item on ground, etc.
@@ -49,6 +50,7 @@ class Engine {
 	std::vector<Actor*> actors;
 	Actor* player;
 	Actor* stairs;
+	Actor* nature;
 
 	Map* map;
 	Gui* gui;

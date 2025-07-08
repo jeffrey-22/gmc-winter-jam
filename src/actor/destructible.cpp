@@ -22,6 +22,19 @@ float Destructible::takeDamage(Actor* owner, float damage) {
 	return damage;
 }
 
+// Have an owner take true damage (NOT subject to defense), calling die() if necessary
+float Destructible::takeTrueDamage(Actor* owner, float trueDamage) {
+	if (trueDamage > 0) {
+		hp -= trueDamage;
+		if (hp <= 0) {
+			die(owner);
+		}
+	} else {
+		trueDamage = 0;
+	}
+	return trueDamage;
+}
+
 // Transform the actor into a corpse, changing display and making it non-blocking
 void Destructible::die(Actor* owner) {
 	owner->ch = '%';
@@ -42,7 +55,7 @@ float Destructible::heal(float amount) {
 	return amount;
 }
 
-// Change max stats, returns actual hp increment
+// Increase max stats, returns actual hp increment
 float Destructible::changeStats(float deltaMaxHp, float deltaDefense) {
 	hp += deltaMaxHp;
 	maxHp += deltaMaxHp;

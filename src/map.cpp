@@ -15,6 +15,7 @@ static constexpr int MAX_TOTAL_ITEMS_BY_FLOOR[20] = {13, 9, 8, 7, 7, 6, 6, 6, 6,
 static constexpr int ENEMY_DENSITY_BY_FLOOR[20] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3};
 
 static auto constexpr LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
+static auto constexpr VIOLET = tcod::ColorRGB{127, 0, 255};
 
 // Bsp Listener class for randomly creating rooms in the Bsp tree algorithm
 class BspListener : public ITCODBspCallback {
@@ -184,21 +185,14 @@ void Map::addMonster(int x, int y) {
 	}
 }
 
-static auto constexpr VIOLET = tcod::ColorRGB{127, 0, 255};
-
 void Map::addItem(int x, int y) {
 	Random rng = Random::instance();
 	int dice = rng.getInt(0, 100);
 
-	if (dice < 100) {
-		Actor* healthPotion = new Actor(x, y, '!', "Potion of Full Healing", VIOLET);
-		healthPotion->blocks = false;
-		healthPotion->pickable = new Pickable(
-			new TargetSelector(TargetSelector::WEARER_HIMSELF, 0),
-			new HealthEffect(800, 10, "%s used the healing potion and recovered %g HP!"));
-		engine.actors.push_back(healthPotion);
-		// Items visuals should be at the back to not hide actors standing over them
-		engine.sendToBack(healthPotion);
+	if (dice < 50) {
+		Item::addPotionOfFire(x, y);
+	} else {
+		Item::addPotionOfProtection(x, y);
 	}
 	/*
 	else if (dice < 20 + 20) {

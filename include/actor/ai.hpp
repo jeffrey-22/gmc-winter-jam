@@ -11,16 +11,22 @@ class Ai {
 
 class PlayerAi : public Ai {
    public:
-	void update(Actor* owner);
-
-   protected:
-	bool moveOrAttack(Actor* owner, int targetx, int targety);
-	void openInventory(Actor* owner);
+	void update(Actor* owner) override;
+	static bool moveOrAttack(Actor* owner, int targetx, int targety);
+	static void openInventory(Actor* owner);
+	static void parseInput(
+		int& dx,
+		int& dy,
+		bool& isActionPickUp,
+		bool& isActionInventory,
+		bool& isActionControlsMenu,
+		bool& isActionDescend,
+		bool& isActionRest);
 };
 
 class MonsterAi : public Ai {
    public:
-	void update(Actor* owner);
+	void update(Actor* owner) override;
 
    protected:
 	int moveCount;
@@ -33,7 +39,7 @@ class MonsterAi : public Ai {
 class TemporaryAi : public Ai {
    public:
 	TemporaryAi(int nbTurns);
-	void update(Actor* owner);
+	virtual void update(Actor* owner) override;
 	void applyTo(Actor* actor);
 
    protected:
@@ -44,5 +50,26 @@ class TemporaryAi : public Ai {
 class ConfusedMonsterAi : public TemporaryAi {
    public:
 	ConfusedMonsterAi(int nbTurns);
-	void update(Actor* owner);
+	void update(Actor* owner) override;
+};
+
+class ConfusedPlayerAi : public TemporaryAi {
+   public:
+	ConfusedPlayerAi(int nbTurns);
+	void update(Actor* owner) override;
+};
+
+class FireAi : public Ai {
+   public:
+	FireAi(Actor* target, int nbTurns);
+	Actor* target;
+	int nbTurns;
+	void update(Actor* owner) override;
+};
+
+class NatureAi : public Ai {
+   public:
+	NatureAi(int level);
+	int nbTurnsSinceCreation, level;
+	void update(Actor* owner) override;
 };

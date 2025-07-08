@@ -16,30 +16,6 @@ Actor::Actor(int x, int y, char ch, const char* name, const TCOD_color_t& color)
 	  pickable(NULL),
 	  container(NULL) {}
 
-Actor::Actor(
-	int x,
-	int y,
-	char ch,
-	const char* name,
-	const TCOD_color_t& color,
-	bool blocks,
-	Attacker* attacker,
-	Destructible* destructible,
-	Ai* ai,
-	Pickable* pickable,
-	Container* container)
-	: x(x),
-	  y(y),
-	  ch(ch),
-	  name(name),
-	  color(color),
-	  blocks(blocks),
-	  attacker(attacker),
-	  destructible(destructible),
-	  ai(ai),
-	  pickable(pickable),
-	  container(container) {}
-
 Actor::~Actor() {
 	if (attacker) delete attacker;
 	if (destructible) delete destructible;

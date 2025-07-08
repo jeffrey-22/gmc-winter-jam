@@ -6,18 +6,34 @@ static constexpr auto LIGHT_AMBER = tcod::ColorRGB{255, 207, 63};
 
 NameTracker::NameTracker(Random* rng) : rng(rng) {
 	callNames.clear();
-	defaultNames.clear();
 	identifyStatus.clear();
 
-	// TODO: fill
+	initDefaultNames();
+
+	descriptions["Potion of Full Healing"] =
+		"\nFully heals the user along with curing status effects.\nIf used while HP is full, increases max HP by 10.\n";
+	descriptions["Potion of Strength"] = "\nPermenantly increases the user's attack power\n";
+	descriptions["Potion of Protection"] =
+		"\nPermenantly increases the user's defense power,\nwhile increasing their max HP by 25.\n";
+	descriptions["Potion of Poison"] = "\nPermenantly lowers the user's attack power.\n";
+	descriptions["Potion of Amnesia"] = "\nLet the user forget what the identified items were.\n";
+	descriptions["Potion of Confusion"] =
+		"\nConfuse the user, causing them to go in random directions.\nLasts for 12 turns.\n";
+	descriptions["Potion of Fire"] =
+		"\nSets the user on fire, which burns for 5HP per turn\nand lasts for 20 turns.\nDrinking any other potion "
+		"cures burning.\n";
+}
+
+void NameTracker::initDefaultNames() {
+	defaultNames.clear();
 
 	defaultNames['!']["Potion of Full Healing"] = "Clear Potion";
 	defaultNames['!']["Potion of Strength"] = "Bubbly Potion";
-	defaultNames['!']["Potion of Protection"] = "Thick potion";
-	defaultNames['!']["Potion of Poison"] = "Sticky potion";
-	defaultNames['!']["Potion of Amnesia"] = "Smoky potion";
-	defaultNames['!']["Potion of Confusion"] = "Glowing potion";
-	defaultNames['!']["Potion of Fire"] = "Unstable potion";
+	defaultNames['!']["Potion of Protection"] = "Thick Potion";
+	defaultNames['!']["Potion of Poison"] = "Sticky Potion";
+	defaultNames['!']["Potion of Amnesia"] = "Smoky Potion";
+	defaultNames['!']["Potion of Confusion"] = "Glowing Potion";
+	defaultNames['!']["Potion of Fire"] = "Unstable Potion";
 
 	defaultNames['?']["scroll of lightning bolt"] = "? green scroll";
 	defaultNames['?']["scroll of confusion"] = "? yellow scroll";
@@ -30,24 +46,12 @@ NameTracker::NameTracker(Random* rng) : rng(rng) {
 			names.push_back(pair.second);
 			assert((int)(pair.second.size()) <= MAX_CALL_STRING_LENGTH);
 		}
-		std::shuffle(names.begin(), names.end(), rng->rng);
+		for (int i = 1; i < names.size(); i++) std::swap(names[i], names[rng->getBoundedInt(0, i)]);
 		int nameIndex = 0;
 		for (auto& pair : typeDefaultNames) {
-			pair.second = names[nameIndex++];
+			defaultNames[typeCh][pair.first] = names[nameIndex++];
 		}
 	}
-
-	descriptions["Potion of Full Healing"] =
-		"\nFully heals the user along with curing status effects.\nIf used while HP is full, increases max HP by 10.\n";
-	descriptions["Potion of Strength"] = "\nPermenantly increases the user's attack power\n";
-	descriptions["Potion of Protection"] =
-		"\nPermenantly increases the user's defense power,\nwhile increasing their max HP by 25.\n";
-	descriptions["Potion of Poison"] = "\nPermenantly lowers the user's attack power.\n";
-	descriptions["Potion of Amnesia"] = "\nLet the user forget what the identified items were.\n";
-	descriptions["Potion of Confusion"] = "\nConfuse the user, causing them to go in random directions.\n";
-	descriptions["Potion of Fire"] =
-		"\nSets the user on fire, which burns for 5HP per turn\nand lasts for 20 turns.\nDrinking any other potion "
-		"cures burning.\n";
 }
 
 NameTracker::~NameTracker() { delete rng; }
@@ -62,6 +66,13 @@ void NameTracker::identifyItem(Actor* itemActor) {
 	identifyStatus[std::string(itemActor->name)] = true;
 	// Clears call names for them
 	callNames.erase(std::string(itemActor->name));
+}
+
+void NameTracker::forgetEverything() {
+	callNames.clear();
+	identifyStatus.clear();
+
+	initDefaultNames();
 }
 
 const char* NameTracker::getDisplayName(const Actor* itemActor) {

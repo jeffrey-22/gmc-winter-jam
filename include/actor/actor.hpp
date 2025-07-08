@@ -18,18 +18,6 @@ class Actor {
 	Container* container;  // component, item that can contain more actors
 
 	Actor(int x, int y, char ch, const char* name, const TCOD_color_t& color);
-	Actor(
-		int x,
-		int y,
-		char ch,
-		const char* name,
-		const TCOD_color_t& color,
-		bool blocks,
-		Attacker* attacker,
-		Destructible* destructible,
-		Ai* ai,
-		Pickable* pickable,
-		Container* container);
 	float getDistance(int cx, int cy) const;
 	~Actor();
 	void render(tcod::Console& console) const;

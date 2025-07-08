@@ -1,5 +1,4 @@
 #include <cassert>
-#include <iostream>
 
 #include "main.hpp"
 
@@ -258,6 +257,7 @@ void InventoryMenu::useItemAtIndex(int itemIndex) {
 	Menu* nextMenu = itemActor->pickable->use(itemActor, inventoryOwner, this);
 	if (nextMenu == NULL) {
 		// Item used and turn spent successfully
+
 		closeWithState(Engine::OTHER_ACTORS_TURN);
 		return;
 	} else if (nextMenu == this) {
