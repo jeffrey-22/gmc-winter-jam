@@ -430,8 +430,17 @@ void TilePickMenu::render(tcod::Console& mainConsole) {
 
 				// Highlight selectable tiles by greenifying
 				float p = 0.5f;
-				TCOD_ColorRGBA hiCol = {120, 255, 120};
-				if (engine.lastMouseTileX == cx && engine.lastMouseTileY == cy) hiCol = {120, 120, 255};
+				TCOD_ColorRGBA hiCol;
+				hiCol.r = 120;
+				hiCol.g = 255;
+				hiCol.b = 120;
+				hiCol.a = 255;
+				if (engine.lastMouseTileX == cx && engine.lastMouseTileY == cy) {
+					hiCol.r = 120;
+					hiCol.g = 120;
+					hiCol.b = 255;
+					hiCol.a = 255;
+				}
 				col = {
 					static_cast<uint8_t>(col.r * p + hiCol.r * (1 - p)),
 					static_cast<uint8_t>(col.g * p + hiCol.g * (1 - p)),
